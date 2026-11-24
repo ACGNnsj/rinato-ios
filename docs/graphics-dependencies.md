@@ -23,3 +23,24 @@
 - Ryujinx upstream (github.com/Ryujinx/Ryujinx): GitHub API returns 404 for /license and /commits/master (verified this round via web_fetch). No upstream-auditable shader source; forks carry provenance risk, per-fork audit required before any reuse claim.
 - yuzu upstream (github.com/yuzu-emu/yuzu): GitHub API likewise returns 404 Not Found (verified this round). No upstream video_core to audit.
 - Consequence for Task 3: default to self-written minimal backend unless MeloNX/nxnative sources check out with clear licenses. No emulator code vendored on this basis.
+
+## Round 7 source checks (controller, 2026-11-25, GitHub code search API)
+
+- MeloNX candidates:
+  - nurtrino/MeloNX | MIT | MeloNX fork - Switch emulator for iOS (CI build of unsigned IPA)
+  - nguyenjessica-lgtm/MeloNX | MIT | Nintendo Switch on iOS. An open-source Nintendo Switch emulator for iPhone and iPad. No jailbreak required.
+  - cheatroyale/MeloNX-HDD | no-license-field | A Nintendo Switch Emulator based on Ryujinx for iOS
+  - lucasmrd/MeloNX-ClipDistance-Fix | MIT | MeloNX (iOS Switch emulator) with a fix for the vertex-as-compute ClipDistance shader crash; builds an unsigned IPA on GitHub Actions
+  - Quancore21/Meliora | NOASSERTION | Nintendo Switch emulator for iPhone and iPad. Closed-loop Adaptive Engine (GPU-bound render scaling), memory governor, Darwin thread scheduling and adaptive frame pa
+- nxnative candidates:
+  - seedds/nxnative | MIT | Switch games running natively on iPhone, iPad and Mac: an NSP folder becomes an unsigned IPA (NSO rewriter, Horizon HLE host, NVN→Metal)
+  - jamescastells/nxnative-gui | MIT | A macOS app for nxnative.
+  - Xc1Ym/LumaNX | MIT | 璃游 LumaNX：nxnative 第三方 GUI，图形化构建 Switch 游戏，支持 macOS 运行与 iOS / iPadOS IPA 导出。A macOS GUI for nxnative: build Switch games for Mac, iPhone and iPad.
+  - varyform/nx-native-wrapper | MIT | NX Play: a Mac app to build, play, install and manage Switch games with nxnative, on the Mac and on iPhone/iPad
+  - LNPANDY/NX2Apple | MIT | one-click macOS app wrapping nxnative.
+
+## Round 7 key finding: seedds/nxnative is MIT and exactly our route
+
+- License endpoint: {"spdx":"MIT","sha":"ed93689ad6ab59c679f8f92bc05ccf50f4352adc"}; HEAD endpoint: {"spdx":null,"sha":"551228c9bbee96cf5677233e4f09e22836fd13f3"} (both verified via GitHub API this round).
+- Repo self-description: NSO rewriter + Horizon HLE host + NVN-to-Metal. If source audit confirms, Task 3 backend decision should be REUSE nxnative's translator/HLE where it covers our needs, and Tasks 4-7 scope shrinks to game-specific gaps (this title's shaders, input/save) instead of a from-scratch host.
+- Required before reuse: clone pinned hash, audit NSO rewriter + HLE + NVN→Metal code, recordxff commit hash in NOTICE.md, confirm no bundled ROM/keys. Game data stays local-only, never committed.

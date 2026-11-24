@@ -14,3 +14,4 @@ shader_note	Arcana Famiglia Rinato shaders
 build	1.0.1	1.0.1	main=0831254e3f469d8af3eaf6e38da32e50	subsdk0=14765b1d77b12d8654ea87a61c65e2b1	sdk=f118ae1c2e7728471aaf1a0d58484968
 package	1.0.1
 romfs_marker	Data/globalgamemanagers
+shader_versions	1.0.1

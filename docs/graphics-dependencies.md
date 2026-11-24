@@ -80,3 +80,8 @@
 - One-script pack: scripts/build_ipa_from_nsp.py (identify → nx_extract → patch_nso → shader capture/split → dmsh_build metallib → build_ipa.sh). No-profile games get surveyed + provisional profile via DM_GAMES_DIR (outside repo — our Rinato work need not fork upstream).
 - Mac is the dev host (PLATFORM=mac); iOS shaders/IPA via Xcode. nxnative CI (tests.yml, xcode-27 image) runs host unit + CPU-only gfx tests; Metal-4 tests stay local (runners lack Metal 4 GPU).
 - Open: whether the offline metallib build (translator + spirv-cross + xcrun metal) runs headless on CI runners — decides if our Task 7 IPA can be pure-CI or needs a real Mac for shader compilation. Our approved plan already assumed macOS CI; this is now concrete and testable.
+
+## Round 15 answer: headless metallib build is CI-proven (controller, 2026-11-25)
+
+- nxnative tests.yml runs `xcrun metal --version` + `own_compilers.py --check-metal` on the xcode-27 runner, and translator tests execute the committed translator on synthetic Maxwell shaders, then spirv-val and the committed spirv-cross — all headless in CI. Full offline chain (translate → SPIR-V → spirv-cross → metal compile) needs no GPU Mac.
+- dmsh_xlate_bin contents: D:\consoles\.scratch\nxnative-audit\dm\gfx\tools\dmsh_xlate_bin\dmsh_xlate. Task 7 IPA can be pure-CI; real Mac/iPhone only for runtime verification (our M0/M2 gates).

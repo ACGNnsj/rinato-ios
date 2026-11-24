@@ -44,3 +44,9 @@
 - License endpoint: {"spdx":"MIT","sha":"ed93689ad6ab59c679f8f92bc05ccf50f4352adc"}; HEAD endpoint: {"spdx":null,"sha":"551228c9bbee96cf5677233e4f09e22836fd13f3"} (both verified via GitHub API this round).
 - Repo self-description: NSO rewriter + Horizon HLE host + NVN-to-Metal. If source audit confirms, Task 3 backend decision should be REUSE nxnative's translator/HLE where it covers our needs, and Tasks 4-7 scope shrinks to game-specific gaps (this title's shaders, input/save) instead of a from-scratch host.
 - Required before reuse: clone pinned hash, audit NSO rewriter + HLE + NVN→Metal code, recordxff commit hash in NOTICE.md, confirm no bundled ROM/keys. Game data stays local-only, never committed.
+
+## Round 8 assessment (controller, 2026-11-25)
+
+- Source: tarball of seedds/nxnative @ 551228c fetched via gh API (local git egress blocked; full-tree audit pending re-download — first attempt truncated, background re-download running).
+- Games table (dm/games/README.md, 289 rows): many Unity IL2CPP + NVN titles, but NO profile for 010008702297A000 (Rinato). Expectation: new provisional game profile via the documented DM_GAMES_DIR path, not a ready-made build.
+- Reuse plan stands: audit NSO rewriter + HLE + NVN→Metal on the pinned tree, then build Rinato as a new profile. Our probe host work (Tasks 1-2) remains valid input either way.

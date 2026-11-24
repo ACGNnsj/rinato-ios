@@ -18,3 +18,8 @@
 - MoltenVK Added to Two Emulators | Vulkan | Cross platform 3D Graphics — https://vulkan.org/news/auto-21326-48a2348075f77e07d7d06593806657fa
 - Graphics backend for opengl and metal - Page 2 - C++ - Cocos Forums — https://forum.cocosengine.org/t/graphics-backend-for-opengl-and-metal/43208?page=2
 - MeloNX — https://melonx.org
+## Round 6 source checks (controller, 2026-11-25)
+
+- Ryujinx upstream (github.com/Ryujinx/Ryujinx): GitHub API returns 404 for /license and /commits/master (verified this round via web_fetch). No upstream-auditable shader source; forks carry provenance risk, per-fork audit required before any reuse claim.
+- yuzu upstream (github.com/yuzu-emu/yuzu): GitHub API likewise returns 404 Not Found (verified this round). No upstream video_core to audit.
+- Consequence for Task 3: default to self-written minimal backend unless MeloNX/nxnative sources check out with clear licenses. No emulator code vendored on this basis.

@@ -56,3 +56,9 @@
 - New game = new profile under dm/games/<title-id>/ with patches.py keyed by NSO build ID, shader tables from shader_split.py, host rows and profile keys. docs/reference/rewriter.md not yet extracted (truncated tarball) — read on re-download.
 - Patch bindings (loosest-correct wins): host > sdk > engine > game > build. Our Unity IL2CPP title will most likely need engine-binding (Unity version) + game-binding patches; build-binding only as last resort (redone every update).
 - Locators fail closed (fingerprint must match exactly once or nothing changes) — compatible with our no-fake-evidence rule.
+
+## Round 11 pipeline notes (from docs/agents/03-bringup.md + 04-graphics.md, partial tree)
+
+- Bring-up loop: patch_nso.py (main+sdk) → dmhost → boot.sh with DM_ROMFS/DM_SAVE/DM_TEMP/DM_MSL_DIR; log markers [RED]/UNIMPL/[nvn] frame counts/memory headroom (iOS os_proc_available_memory — answers our A13 memory question empirically).
+- Graphics: hle_nvn.c records NVN → replays as Metal 4 at submit (nvn_mtl.m). Shaders translated OFFLINE (Ryujinx translator → SPIR-V → spirv-cross → metallib), keyed sha256(control+code)[:16]. Unity programs supported by shader_split.py (incl. missing-type-tree second pass).
+- Open audit item: where does the pinned tree source its Ryujinx translator now that upstream is gone — vendored copy or submodule? Must confirm before reuse. Our Task 4-7 plan maps onto: patch NSOs → shader_split our RomFS/main → build metallib → boot to title.

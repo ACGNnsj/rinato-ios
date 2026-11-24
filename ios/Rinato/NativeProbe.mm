@@ -275,13 +275,10 @@ static NSString *RinatoCallGuarded(int64_t (*function)(int64_t), int64_t argumen
                  strerror(errno));
     } else {
         ProbeLog(sink, @"PROBE jit_map_jit=ok");
-        if (@available(iOS 14.0, *)) {
-            pthread_jit_write_protect_np(0);
-        }
+        // pthread_jit_write_protect_np is macOS-only in the public SDK, so the
+        // mapping is written directly. Whether iOS accepts the write and then
+        // executes the page is exactly what jit_map_jit_call reports.
         memcpy(jit, code, sizeof(code));
-        if (@available(iOS 14.0, *)) {
-            pthread_jit_write_protect_np(1);
-        }
         int64_t value = 0;
         NSString *outcome = RinatoCallGuarded((int64_t (*)(int64_t))jit, 0, &value);
         ProbeLog(sink, @"PROBE jit_map_jit_call=%@ value=0x%llx", outcome,

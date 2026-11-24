@@ -2,8 +2,9 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-/// Host-side M0 measurements. Each one is independent and records its real outcome;
-/// a failure keeps the verbatim errno text and is never converted into a success.
+/// Host-side M0 measurements. Each one is independent and records its real
+/// outcome; a failure keeps the verbatim errno text and is never turned into a
+/// success it did not observe.
 @interface NativeProbe : NSObject
 
 /// Emits "PROBE key=value" lines through the supplied sink.

@@ -9,18 +9,26 @@ Date: 2026-11-25. Target: iPhone 11 Pro Max, iOS 27.2.1, arm64e, 4 GB. HEAD: aa3
 - Downloaded artifact Rinato-unsigned.ipa revalidated with committed tools/rinato_ipa.py: IPA VALID, bundle dev.rinato.probe, executable Rinato, version 0.1.0, minimum iOS 17.0, architectures ['arm64'], signed False, entry_count 5.
 - Probe app contains no game data, keys, or extracted assets; CI compiles only in-repo sources.
 
-## UNKNOWN — requires physical device (never measured in this session)
+## Partially measured on device (2026-11-25 crash log); remainder UNKNOWN
 
 | Item | Status | Reason |
 |---|---|---|
-| Fixed-value ARM64 function return | UNKNOWN | No device run observed |
-| arm64e function-pointer / indirect-call (PAC boundary) | UNKNOWN | No device run observed |
-| JIT (mmap PROT_EXEC / MAP_JIT) result + errno | UNKNOWN | Needs sideload + JIT enablement on the iPhone |
-| Available-memory + bounded allocation | UNKNOWN | No device run observed |
-| Metal clear color + drawable/present log | UNKNOWN | No device screenshot/log observed |
-| Sideload/JIT tool versions + error text | UNKNOWN | Windows has iTunes only; pymobiledevice3 absent |
+| Fixed-value ARM64 function return | UNKNOWN | Ran before crash; lines in on-device probe.log, not yet retrieved |
+| arm64e function-pointer / indirect-call (PAC boundary) | UNKNOWN | Ran before crash; lines in on-device probe.log, not yet retrieved |
+| JIT (mmap PROT_EXEC / MAP_JIT) | MEASURED FAILED (2026-11-25 .ips) | Kernel SIGKILL, CODESIGNING Invalid Page, no JIT enablement attached |
+| Available-memory + bounded allocation | UNKNOWN | Ran after JIT in old order (lost in crash); moved before JIT, needs rerun |
+| Metal clear color + drawable/present log | UNKNOWN | viewDidLoad ran before crash but renderer start never reached; needs rerun |
+| Sideload tool (user) + versions | MEASURED (partial) | Personal cert dev.rinato.probe.ZBCXKM6BPD; exact tool/version unrecorded |
 
-CI success is NOT M0 device success. M0 stays OPEN until a real device log is measured.
+CI success is NOT M0 device success. M0 stays OPEN until probe.log + JIT-enabled rerun are measured.
+
+## Device run 2026-11-25 01:28 (user-provided Rinato-2026-11-25-012855.ips, 19,052 bytes, read verbatim)
+
+- Device confirmed: iPhone12,5 (11 Pro Max), iOS 27.2.1 (24B156), developerMode=1, personal cert dev.rinato.probe.ZBCXKM6BPD, arm64 binary launched in foreground, lived ~1.5 s.
+- JIT: MEASURED FAILED. Main-thread crash in +[NativeProbe probeJit:]: EXC_BAD_ACCESS/SIGKILL, KERN_PROTECTION_FAILURE at 0x10420c000, termination CODESIGNING Invalid Page, ktriage "Failed to fault in a page with execute permissions". No debugger/JIT streamer was attached — expected outcome, not a probe bug. The in-app fault guard cannot catch SIGKILL.
+- Fixed-value/PAC: ran before the crash; results sit in on-device Documents/probe.log (ProbeLog persists every line to file). Retrieve via Apple Devices/iTunes File Sharing → Rinato → probe.log.
+- Hardening in this commit: probeJit moved last in runAllWithLog so a codesigning kill cannot pre-empt memory/documents probes.
+- Still needed for M0 go/no-go: (1) probe.log from this run; (2) rerun with JIT enabled (SideJITServer/StikJIT/pymobiledevice3 debugserver) for the JIT row and Metal screenshot.
 
 ## Exact Windows device procedure (reproducible)
 

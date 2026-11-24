@@ -142,9 +142,11 @@ static NSString *RinatoCallGuarded(int64_t (*function)(int64_t), int64_t argumen
     [self probeIdentity:sink];
     [self probeFixedValue:sink];
     [self probePointerAuthentication:sink];
-    [self probeJit:sink];
     [self probeMemory:sink];
     [self probeDocuments:sink];
+    // JIT last: without a debugger/JIT streamer attached the kernel kills the
+    // process with SIGKILL (CODESIGNING Invalid Page), which no in-app guard
+    // can catch. Running it last keeps memory/documents results intact.
 }
 
 + (void)probeIdentity:(ProbeSink)sink {

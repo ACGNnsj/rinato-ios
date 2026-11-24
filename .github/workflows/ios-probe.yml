@@ -1,0 +1,101 @@
+name: ios-probe
+
+# Builds the minimal M0 probe host into an unsigned IPA on a GitHub-hosted macOS
+# runner, then verifies the artifact structure. No game data, keys or extracted
+# assets are uploaded: the job only compiles sources that live in this repository.
+
+on:
+  push:
+    branches: [rinato-native-m0, main]
+    paths:
+      - "ios/**"
+      - "tools/rinato_ipa.py"
+      - "tools/test_rinato_ipa.py"
+      - "tools/rinato_probe_log.py"
+      - "tools/test_rinato_probe_log.py"
+      - ".github/workflows/ios-probe.yml"
+  pull_request:
+    paths:
+      - "ios/**"
+      - "tools/rinato_ipa.py"
+      - "tools/rinato_probe_log.py"
+      - ".github/workflows/ios-probe.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ios-probe-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: unsigned IPA
+    runs-on: macos-15
+    timeout-minutes: 30
+
+    steps:
+      - name: Check out sources
+        uses: actions/checkout@v4
+
+      - name: Record toolchain versions
+        run: |
+          set -euo pipefail
+          xcodebuild -version
+          xcrun --sdk iphoneos --show-sdk-version
+          sw_vers
+          uname -m
+
+      - name: Run host tests
+        run: |
+          set -euo pipefail
+          python3 tools/test_rinato_ipa.py
+          python3 tools/test_rinato_probe_log.py
+
+      - name: Build unsigned app
+        run: |
+          set -euo pipefail
+          xcodebuild \
+            -project ios/Rinato.xcodeproj \
+            -scheme Rinato \
+            -configuration Release \
+            -sdk iphoneos \
+            -derivedDataPath build \
+            -destination 'generic/platform=iOS' \
+            CODE_SIGNING_ALLOWED=NO \
+            CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGN_IDENTITY="" \
+            build
+
+      - name: Package unsigned IPA
+        run: |
+          set -euo pipefail
+          APP="build/Build/Products/Release-iphoneos/Rinato.app"
+          test -d "$APP"
+          mkdir -p dist/Payload
+          cp -R "$APP" dist/Payload/
+          # A payload that carries game content would be rejected here, not shipped.
+          ( cd dist && /usr/bin/zip -qry ../Rinato-unsigned.ipa Payload )
+          ls -l Rinato-unsigned.ipa
+          unzip -l Rinato-unsigned.ipa
+
+      - name: Verify IPA structure
+        run: |
+          set -euo pipefail
+          python3 tools/rinato_ipa.py Rinato-unsigned.ipa | tee ipa-inspection.txt
+
+      - name: Record binary architecture
+        run: |
+          set -euo pipefail
+          lipo -info build/Build/Products/Release-iphoneos/Rinato.app/Rinato | tee -a ipa-inspection.txt
+
+      - name: Upload unsigned IPA
+        uses: actions/upload-artifact@v4
+        with:
+          name: Rinato-unsigned-ipa
+          path: |
+            Rinato-unsigned.ipa
+            ipa-inspection.txt
+          if-no-files-found: error
+          retention-days: 30

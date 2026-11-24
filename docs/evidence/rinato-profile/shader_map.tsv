@@ -1,4 +1,4 @@
-# kind: evidence  Arcana Famiglia Rinato shaders (Unity Shader / GLSLC in RomFS + main) ¡ú control section + code area keys (dm/gfx/tools/shader_split.py)
+# kind: evidence  Arcana Famiglia Rinato shaders (Unity Shader / GLSLC in RomFS + main) â€” control section + code area keys (dm/gfx/tools/shader_split.py)
 # column 5 names the chosen source of each key, a copy in the game before one in an add-on; no PC shader pairing supplied
 package	index	stage	dm_ctl_sha16	source
 vs_main.bin	0	vertex	24e4cd391d993137	main#GLSLC@0x3d54990

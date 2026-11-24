@@ -74,3 +74,9 @@
 - Closest shipped precedent: AI: THE SOMNIUM FILES (Unity 2017.4 IL2CPP + FMOD, NVN) — plays on iPhone at 60fps, no patches.py needed, only game.tsv memory/layout settings. Same genre family as Rinato (adventure). Precedent says: Unity IL2CPP adventure titles can reach playable with config-only bring-up.
 - nxnative root LICENSE confirmed MIT (Copyright 2026 seedds). dm/ios = full Swift/ObjC launcher (game menu, gamepad, CloudSaves/SaveSync) — Task 8 save-sync has a reuse candidate too.
 - Rinato RomFS (from Task 1 manifest): Unity .assets + StreamingAssets custom packs (adv/bgm/data .hpb/.hph, dialogue .hdlg incl. zhcn, script .heslnk); movie-container matches in manifest: 196; pack/script matches: 21. No FMOD/CRIWARE markers seen — audio path TBD during shader/split survey, not assumed.
+
+## Round 14 build + CI picture (controller, 2026-11-25)
+
+- One-script pack: scripts/build_ipa_from_nsp.py (identify → nx_extract → patch_nso → shader capture/split → dmsh_build metallib → build_ipa.sh). No-profile games get surveyed + provisional profile via DM_GAMES_DIR (outside repo — our Rinato work need not fork upstream).
+- Mac is the dev host (PLATFORM=mac); iOS shaders/IPA via Xcode. nxnative CI (tests.yml, xcode-27 image) runs host unit + CPU-only gfx tests; Metal-4 tests stay local (runners lack Metal 4 GPU).
+- Open: whether the offline metallib build (translator + spirv-cross + xcrun metal) runs headless on CI runners — decides if our Task 7 IPA can be pure-CI or needs a real Mac for shader compilation. Our approved plan already assumed macOS CI; this is now concrete and testable.

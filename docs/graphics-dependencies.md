@@ -68,3 +68,9 @@
 - Ryujinx translator is a VENDORED subset (dm/third_party/ryujinx: Ryujinx.Graphics.Shader + Common + Spv.Generator from Ryujinx 1.3.2, MIT LICENSE.txt, local nxnative: fixes documented in its README). No live upstream dependency — takedown risk closed.
 - spirv-cross is a prebuilt binary BUT ships with build.sh + patch + license files (dm/gfx/tools/spirv_cross_bin/) — rebuildable, auditable; acceptable with a rebuild-from-source check before we rely on it.
 - Host is C/ObjC HLE (dm/host/hle_*.c) with dm/ios packaging dir; rewriter/tools under dm/tools. Our probe host (Tasks 1-2) stays useful as the device-side harness; the heavy lifting (NSO rewrite/HLE/NVN→Metal) is reuse, not rewrite.
+
+## Round 13 reference profile + our media shape (controller, 2026-11-25)
+
+- Closest shipped precedent: AI: THE SOMNIUM FILES (Unity 2017.4 IL2CPP + FMOD, NVN) — plays on iPhone at 60fps, no patches.py needed, only game.tsv memory/layout settings. Same genre family as Rinato (adventure). Precedent says: Unity IL2CPP adventure titles can reach playable with config-only bring-up.
+- nxnative root LICENSE confirmed MIT (Copyright 2026 seedds). dm/ios = full Swift/ObjC launcher (game menu, gamepad, CloudSaves/SaveSync) — Task 8 save-sync has a reuse candidate too.
+- Rinato RomFS (from Task 1 manifest): Unity .assets + StreamingAssets custom packs (adv/bgm/data .hpb/.hph, dialogue .hdlg incl. zhcn, script .heslnk); movie-container matches in manifest: 196; pack/script matches: 21. No FMOD/CRIWARE markers seen — audio path TBD during shader/split survey, not assumed.

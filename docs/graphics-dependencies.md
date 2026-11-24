@@ -62,3 +62,9 @@
 - Bring-up loop: patch_nso.py (main+sdk) → dmhost → boot.sh with DM_ROMFS/DM_SAVE/DM_TEMP/DM_MSL_DIR; log markers [RED]/UNIMPL/[nvn] frame counts/memory headroom (iOS os_proc_available_memory — answers our A13 memory question empirically).
 - Graphics: hle_nvn.c records NVN → replays as Metal 4 at submit (nvn_mtl.m). Shaders translated OFFLINE (Ryujinx translator → SPIR-V → spirv-cross → metallib), keyed sha256(control+code)[:16]. Unity programs supported by shader_split.py (incl. missing-type-tree second pass).
 - Open audit item: where does the pinned tree source its Ryujinx translator now that upstream is gone — vendored copy or submodule? Must confirm before reuse. Our Task 4-7 plan maps onto: patch NSOs → shader_split our RomFS/main → build metallib → boot to title.
+
+## Round 12 vendoring resolved (full tree @ 551228c, 4597 entries, gzip OK)
+
+- Ryujinx translator is a VENDORED subset (dm/third_party/ryujinx: Ryujinx.Graphics.Shader + Common + Spv.Generator from Ryujinx 1.3.2, MIT LICENSE.txt, local nxnative: fixes documented in its README). No live upstream dependency — takedown risk closed.
+- spirv-cross is a prebuilt binary BUT ships with build.sh + patch + license files (dm/gfx/tools/spirv_cross_bin/) — rebuildable, auditable; acceptable with a rebuild-from-source check before we rely on it.
+- Host is C/ObjC HLE (dm/host/hle_*.c) with dm/ios packaging dir; rewriter/tools under dm/tools. Our probe host (Tasks 1-2) stays useful as the device-side harness; the heavy lifting (NSO rewrite/HLE/NVN→Metal) is reuse, not rewrite.

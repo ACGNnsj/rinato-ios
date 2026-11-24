@@ -1,0 +1,1277 @@
+{
+  "schema_version": 1,
+  "game": {
+    "title_id": "010008702297A000",
+    "update_title_id": "010008702297A800",
+    "version": "1.0.1"
+  },
+  "integrity": "ExeFS FS headers, hash tables and data blocks verified; base/update RomFS merged through BKTR tables; output files SHA-256 indexed; RSA signatures not checked",
+  "packages": [
+    {
+      "role": "app",
+      "file_name": "[APP][010008702297A000][1.0.0][HK][18.0.0].xci",
+      "size": 2190595635,
+      "sha256": "639ba74cd845bee08a6f6c5623fdf2b3ba45574f7858635cc02b934d3d807aa3"
+    },
+    {
+      "role": "update",
+      "file_name": "[UPD][010008702297A800][1.0.1][HK][20.5.0].nsp",
+      "size": 102828309,
+      "sha256": "e3e66dc584b53479ef014679d81d7360727f10eea158f5a9370bb207256e0fa4"
+    }
+  ],
+  "exefs": {
+    "app-1.0.0": [
+      {
+        "path": "app-1.0.0/exefs/main",
+        "size": 38687623,
+        "sha256": "9282eaf00a3d213393482f5f35de10339a230055b1276936873a1dd7ecbffaa9"
+      },
+      {
+        "path": "app-1.0.0/exefs/main.npdm",
+        "size": 1604,
+        "sha256": "3d0849c098f5a65e2ef12cddfce15087125aaf81defa0dd63d940d8b49477a1d"
+      },
+      {
+        "path": "app-1.0.0/exefs/rtld",
+        "size": 8180,
+        "sha256": "a43abf145ade81469158b536bd277377b60814a90ee5bebb00dc02b13996d70c"
+      },
+      {
+        "path": "app-1.0.0/exefs/sdk",
+        "size": 5976954,
+        "sha256": "497fd0ebea2b016ccd0edb6b4e2efa5fc262f2cff6438dd64c0cbaa26b22a90b"
+      },
+      {
+        "path": "app-1.0.0/exefs/subsdk0",
+        "size": 3415764,
+        "sha256": "8f01c4487d0e2a362ba2cab356e34716ff9f33c8efe6a107e9aa90df0eac570d"
+      }
+    ],
+    "update-1.0.1": [
+      {
+        "path": "update-1.0.1/exefs/main",
+        "size": 38678380,
+        "sha256": "31441da3f61393d80a31f837c04e920e35fb8c6b82ecdcfbd5a5c50ed20e1056"
+      },
+      {
+        "path": "update-1.0.1/exefs/main.npdm",
+        "size": 1604,
+        "sha256": "3307f14a57ebde3842718fb2ced6c4cbe04d3583cc7856ba20cb375f98df0ee9"
+      },
+      {
+        "path": "update-1.0.1/exefs/rtld",
+        "size": 8180,
+        "sha256": "a43abf145ade81469158b536bd277377b60814a90ee5bebb00dc02b13996d70c"
+      },
+      {
+        "path": "update-1.0.1/exefs/sdk",
+        "size": 5976954,
+        "sha256": "497fd0ebea2b016ccd0edb6b4e2efa5fc262f2cff6438dd64c0cbaa26b22a90b"
+      },
+      {
+        "path": "update-1.0.1/exefs/subsdk0",
+        "size": 3415764,
+        "sha256": "8f01c4487d0e2a362ba2cab356e34716ff9f33c8efe6a107e9aa90df0eac570d"
+      }
+    ]
+  },
+  "romfs": {
+    "image": {
+      "path": "update-1.0.1/romfs.bin",
+      "size": 2137379692,
+      "sha256": "1aff7c841660492c21d79b1b3169012ea3795e0f112f2a8bbbfa8f09d9493fef"
+    },
+    "file_count": 128,
+    "total_payload_size": 2137371245,
+    "files": [
+      {
+        "path": "update-1.0.1/romfs/.nrr/dynamic.nrr",
+        "size": 4096,
+        "sha256": "01e430b439253d99cad1f1804393e27ccffef74ed6984bbd5166cf8866e216be"
+      },
+      {
+        "path": "update-1.0.1/romfs/Data/boot.config",
+        "size": 241,
+        "sha256": "51f5d2bea1d2dc02ec62cf82c50f0a2dd9f2107abfea2a2c96694239794ea540"
+      },
+      {
+        "path": "update-1.0.1/romfs/Data/globalgamemanagers",
+        "size": 144012,
+        "sha256": "0aea58e9e451a9ec45657711d4be2195c2877ba7652e3e19eb29306348e92541"
+      },
+      {
+        "path": "update-1.0.1/romfs/Data/globalgamemanagers.assets",
+        "size": 825744,
+        "sha256": "9519f3062692826e223accded434cb83c38fb7dd07fa0e11d5a0039307b60fc5"
+      },
+      {
+        "path": "update-1.0.1/romfs/Data/level0",
+        "size": 142348,
+        "sha256": "48a8b0085445038fb761d325b4a9a4a57cb35fc01dca7fe287c1750c7460e29b"
+      },
+      {
+        "path": "update-1.0.1/romfs/Data/Managed/Metadata/global-metadata.dat",
+        "size": 11563664,
+        "sha256": "9989b3d0f03583b374b9e7c6c2bcf43dfb5edc8dd49d0b00602cb3c479dbc6d3"
+      },
+      {
+        "path": "update-1.0.1/romfs/Data/Managed/Resources/mscorlib.dll-resources.dat",
+        "size": 337563,
+        "sha256": "c5baa176a5b72cd545266340e42102d393a5e43d38c95796bc828918bb95277f"
+      },
+      {
+        "path": "update-1.0.1/romfs/Data/rawsettings",
+        "size": 64,
+        "sha256": "4676af5afba651ed90fb3bbffc5dd4f0958b027e2a798fbd66fd8e2b658c989d"
+      },
+      {
+        "path": "update-1.0.1/romfs/Data/Resources/unity default resources",
+        "size": 733992,
+        "sha256": "afe5403992c6810b05659d4642db92016b15c4c8a333fa4c93d420b2c7ab4548"
+      },
+      {
+        "path": "update-1.0.1/romfs/Data/Resources/unity_builtin_extra",
+        "size": 923216,
+        "sha256": "c2b828f41934127d67f4a1579e84b3240ac789a908cce1d4c384bfb783fa1b56"
+      },
+      {
+        "path": "update-1.0.1/romfs/Data/resources.assets",
+        "size": 26432,
+        "sha256": "7a4a7592b2c765b4b2c1ede51ff20c63874d64d93bf0161f404afe10404a39b8"
+      },
+      {
+        "path": "update-1.0.1/romfs/Data/resources.assets.resS",
+        "size": 351744,
+        "sha256": "072f32daea08fc91b9efdefae7d3499f9339882b20d64e3e922639e705968771"
+      },
+      {
+        "path": "update-1.0.1/romfs/Data/RuntimeInitializeOnLoads.json",
+        "size": 1713,
+        "sha256": "1d5005a8bc862c9a699f2e995401b148f4770a2346e6ac102bd69f43c4abe7d9"
+      },
+      {
+        "path": "update-1.0.1/romfs/Data/ScriptingAssemblies.json",
+        "size": 3184,
+        "sha256": "198b8630c9cf384e953b71eb8dd6343f91624f1ff5d4734bb4d68d00d72c165e"
+      },
+      {
+        "path": "update-1.0.1/romfs/Data/sharedassets0.assets",
+        "size": 23754700,
+        "sha256": "75095e6a04955a0410fa1dc0e06934a9f480432b9a49f203c65dd69f0878f091"
+      },
+      {
+        "path": "update-1.0.1/romfs/Data/sharedassets0.assets.resS",
+        "size": 10221952,
+        "sha256": "3cc27b193e2b4f7c4cfb1bdf5ffb0147c051df8a0e7ea12fd8207e22de5ac919"
+      },
+      {
+        "path": "update-1.0.1/romfs/Data/StreamingAssets/adv.hpb",
+        "size": 549858560,
+        "sha256": "d7644d057b687637a8f8063ab3d2a648fd87e31eccb00cd33c6a5908b26dae02"
+      },
+      {
+        "path": "update-1.0.1/romfs/Data/StreamingAssets/adv.hph",
+        "size": 137856,
+        "sha256": "2d4f6571e4ba7c0ad657d32ee3d38d680e956d3d0408f809c9338076d0511be2"
+      },
+      {
+        "path": "update-1.0.1/romfs/Data/StreamingAssets/bgm.hpb",
+        "size": 103921856,
+        "sha256": "62b79bce92804ce54414d7ab6c0bce4756ae6c9366c5b6b67da3f747a8da3f42"
+      },
+      {
+        "path": "update-1.0.1/romfs/Data/StreamingAssets/bgm.hph",
+        "size": 13696,
+        "sha256": "5d4752f55eb823cb4f34566fd9c45d79994d735135c9681bfe292cbddd3bd948"
+      },
+      {
+        "path": "update-1.0.1/romfs/Data/StreamingAssets/data.hpb",
+        "size": 97289344,
+        "sha256": "715d6eefa00063a847b6680bb0ff18179233aa3bbdf58fb633a8f714a0af633f"
+      },
+      {
+        "path": "update-1.0.1/romfs/Data/StreamingAssets/data.hph",
+        "size": 5760,
+        "sha256": "4d6c052240b7472a9a15567e4e0f10de29154c5bde89927bb52422acd3f43abb"
+      },
+      {
+        "path": "update-1.0.1/romfs/Data/StreamingAssets/script/script.heslnk",
+        "size": 50115360,
+        "sha256": "842184c2502e910af2fc8c8b15a72414a293280bf439de2542d927480c572dd9"
+      },
+      {
+        "path": "update-1.0.1/romfs/Data/StreamingAssets/script/script_dialog_en.hdlg",
+        "size": 800000,
+        "sha256": "ff1ae0d927b95bd993871f66d35a2a9e3abb1ec2412dc2d78e1a74679be1ee18"
+      },
+      {
+        "path": "update-1.0.1/romfs/Data/StreamingAssets/script/script_dialog_ja.hdlg",
+        "size": 912224,
+        "sha256": "b21475892a441d4199c83f3ea5d48cbc9e849ebfae57a78fc6370754ef3d9f60"
+      },
+      {
+        "path": "update-1.0.1/romfs/Data/StreamingAssets/script/script_dialog_zhcn.hdlg",
+        "size": 851744,
+        "sha256": "9554eaebc0ffa409249ee4642f604a6844d7d2fb078c5d201134220a556316fd"
+      },
+      {
+        "path": "update-1.0.1/romfs/Data/StreamingAssets/script/script_dialog_zhtw.hdlg",
+        "size": 853568,
+        "sha256": "d89760fe690e9eefc69f0902b009cd0993a887a53d677adfcaac147710b0fd7a"
+      },
+      {
+        "path": "update-1.0.1/romfs/Data/StreamingAssets/videos/AF_EF00_0.mp4",
+        "size": 3071586,
+        "sha256": "8f14eebdb998f48590b7d16c4d0792b833e8ea31b9e7a2532bd596e7f996d55c"
+      },
+      {
+        "path": "update-1.0.1/romfs/Data/StreamingAssets/videos/AF_EF01_0.mp4",
+        "size": 4431735,
+        "sha256": "67d956fcd224cacc0889893228413899a6e9a0c11d81a67ebd5105a690006227"
+      },
+      {
+        "path": "update-1.0.1/romfs/Data/StreamingAssets/videos/AF_EF02_0.mp4",
+        "size": 2899565,
+        "sha256": "665d106a5418129ae956c3c21ad61ca9ab75575d07d0427d3bfec0378be37fc5"
+      },
+      {
+        "path": "update-1.0.1/romfs/Data/StreamingAssets/videos/AF_EF02_1.mp4",
+        "size": 1025215,
+        "sha256": "717cdf2b1a9c35b394a66dd29938e237829e79cf8d51bc78bc4e7bfa6197ec32"
+      },
+      {
+        "path": "update-1.0.1/romfs/Data/StreamingAssets/videos/AF_EF02_2.mp4",
+        "size": 976828,
+        "sha256": "3189cfcbeb3627dfa2e5b6ffca21e3d92790af8f7297de9a35b5151563a80cd3"
+      },
+      {
+        "path": "update-1.0.1/romfs/Data/StreamingAssets/videos/AF_EF03_0.mp4",
+        "size": 1873408,
+        "sha256": "54d6846042053f14d4e3d9dfb59d1b74b37d5ac95a631efd5d09372163b166d7"
+      },
+      {
+        "path": "update-1.0.1/romfs/Data/StreamingAssets/videos/AF_EF03_1.mp4",
+        "size": 3060364,
+        "sha256": "05a2352e4187d1f6c40116a6ceabd97af33eb2a4c770e8fc1881a7e48ca5a816"
+      },
+      {
+        "path": "update-1.0.1/romfs/Data/StreamingAssets/videos/AF_EF03_2.mp4",
+        "size": 1687391,
+        "sha256": "014a00460972a19170fb1ccc8c14331b41df0331e1ef47d201c6df69d47b3b4f"
+      },
+      {
+        "path": "update-1.0.1/romfs/Data/StreamingAssets/videos/AF_EF03_3.mp4",
+        "size": 3887329,
+        "sha256": "0e0aa919731a64bff2326c3a8e40568b84d68ed849bf8cc3be13b73f2bfe8e0c"
+      },
+      {
+        "path": "update-1.0.1/romfs/Data/StreamingAssets/videos/AF_EF04_0.mp4",
+        "size": 6625846,
+        "sha256": "c6271bdd92250ad9768f2de0bb87806c61e403cec6de09397860f1e3683a537a"
+      },
+      {
+        "path": "update-1.0.1/romfs/Data/StreamingAssets/videos/AF_EF05_0.mp4",
+        "size": 6400631,
+        "sha256": "e982699dfa052329b997dea029f5c18f816638fb7a463bc96f56ed29b0f99771"
+      },
+      {
+        "path": "update-1.0.1/romfs/Data/StreamingAssets/videos/AF_EF05_1.mp4",
+        "size": 12018989,
+        "sha256": "1e597048a1624b1593589c17aae012075bfc6356d25f383b87d1f50b9d117dec"
+      },
+      {
+        "path": "update-1.0.1/romfs/Data/StreamingAssets/videos/AF_EF06_0.mp4",
+        "size": 166824,
+        "sha256": "a3378381cad8c0942e270003366f9d8e5b24dbbe90a98689944402f6f447c5d2"
+      },
+      {
+        "path": "update-1.0.1/romfs/Data/StreamingAssets/videos/AF_EF06_1.mp4",
+        "size": 230008,
+        "sha256": "d1bfd82d34d9d3e6b9d5d0a518385ae718c50123461f7b5a2be68e3fcc1f027c"
+      },
+      {
+        "path": "update-1.0.1/romfs/Data/StreamingAssets/videos/AF_EF07_0.mp4",
+        "size": 571065,
+        "sha256": "f2941f8ff44cce5518b5e7c3a310ae54edf12afd854d4b440ce8107d948742f1"
+      },
+      {
+        "path": "update-1.0.1/romfs/Data/StreamingAssets/videos/AF_EF08_0.mp4",
+        "size": 12499070,
+        "sha256": "0f220a24247706cafdbe30452ede5379bec1d75863936cd65956caff786999a5"
+      },
+      {
+        "path": "update-1.0.1/romfs/Data/StreamingAssets/videos/AF_EF09_0.mp4",
+        "size": 12894552,
+        "sha256": "aca3ee531123d8c439da995ec4ba87b94ca3e03f8e31513695345ff0a92168f3"
+      },
+      {
+        "path": "update-1.0.1/romfs/Data/StreamingAssets/videos/AF_EF10_0.mp4",
+        "size": 13151798,
+        "sha256": "1d54e73c5c491f7c6887d0e7b290b5e24fb7e6f863bf7b9bb04a7cee0045ef3b"
+      },
+      {
+        "path": "update-1.0.1/romfs/Data/StreamingAssets/videos/AF_EF11_0.mp4",
+        "size": 12154418,
+        "sha256": "e83efc988364071e39e3a23b5a5c42f72403a4611e0cd91d2f34fa2e2695393d"
+      },
+      {
+        "path": "update-1.0.1/romfs/Data/StreamingAssets/videos/AF_EF12_0.mp4",
+        "size": 12006803,
+        "sha256": "7b8a42661abbb4b6fe563d0831cda0a5817807d911e53ee5aaefd6e0575c961d"
+      },
+      {
+        "path": "update-1.0.1/romfs/Data/StreamingAssets/videos/AF_EF13_0.mp4",
+        "size": 12043920,
+        "sha256": "f9b9b3f9cd60d7fe833a5fc33358d601c100922136ab89e08fb0887b58ba0ed4"
+      },
+      {
+        "path": "update-1.0.1/romfs/Data/StreamingAssets/videos/AF_EF14_0.mp4",
+        "size": 13107184,
+        "sha256": "04971e83cf54fde0718cda14be1b0fb6580bb49bc1cd83cbdca695033b9c46a1"
+      },
+      {
+        "path": "update-1.0.1/romfs/Data/StreamingAssets/videos/AF_EF15_0.mp4",
+        "size": 13035267,
+        "sha256": "7d692ce08db0ec9b67979f199d029dbb9f1ea9906e91d8a5e11b4bfee8350568"
+      },
+      {
+        "path": "update-1.0.1/romfs/Data/StreamingAssets/videos/AF_EF17_0.mp4",
+        "size": 12571920,
+        "sha256": "b3bb0a203ed05e45e92654db421eb04beb842ab79a72ee3dea0b81087fa93377"
+      },
+      {
+        "path": "update-1.0.1/romfs/Data/StreamingAssets/videos/AF_EF18_0.mp4",
+        "size": 8419259,
+        "sha256": "6fc05c8b89b07c1abb5a6a9cd1500902a6ed94fa595cef96767ff6ed27e0d749"
+      },
+      {
+        "path": "update-1.0.1/romfs/Data/StreamingAssets/videos/AF_EF19_0.mp4",
+        "size": 4533938,
+        "sha256": "ed2ff6cdb043299e93118cabda8c6435982bd6274f6a3c8092b4f4f8eaf6307d"
+      },
+      {
+        "path": "update-1.0.1/romfs/Data/StreamingAssets/videos/AF_EF20_0.mp4",
+        "size": 8919661,
+        "sha256": "5c211a2c1d3a8e28e62c30611663ce218c134ed11fc2f9de558d2ae43c64ec73"
+      },
+      {
+        "path": "update-1.0.1/romfs/Data/StreamingAssets/videos/AF_EF21_0.mp4",
+        "size": 15357807,
+        "sha256": "cce3bc553d0c284769db3f427c0cf6ce39ccb02dc2afb307a3edb2bbd07a3f52"
+      },
+      {
+        "path": "update-1.0.1/romfs/Data/StreamingAssets/videos/AF_EF22_0.mp4",
+        "size": 12900531,
+        "sha256": "f66688b8a4ac0c8dfc0b7991b7b8069dfd810f5b8fa167aa27cdf7a07afce242"
+      },
+      {
+        "path": "update-1.0.1/romfs/Data/StreamingAssets/videos/AF_EF23_0.mp4",
+        "size": 3963788,
+        "sha256": "c724967657502e4a1b56aa8d3ede576fe9ab4ad58d8d591b890816e0d7b04b4f"
+      },
+      {
+        "path": "update-1.0.1/romfs/Data/StreamingAssets/videos/AF_EF24_0.mp4",
+        "size": 3507631,
+        "sha256": "c78663771e186e750ee452042e49a682c4def56c8c7743b0a81a2a93df506fdd"
+      },
+      {
+        "path": "update-1.0.1/romfs/Data/StreamingAssets/videos/AF_EF25_0.mp4",
+        "size": 337974,
+        "sha256": "c7eb96a02dd4846b00f168e94124b62acb38a9a0512e84af0ac075053e95cc66"
+      },
+      {
+        "path": "update-1.0.1/romfs/Data/StreamingAssets/videos/AF_EF26_0.mp4",
+        "size": 122583,
+        "sha256": "f48fc568a1cd3c7e330e3df8d8ad1c269cad5f5503ebf5c846b703da544544d7"
+      },
+      {
+        "path": "update-1.0.1/romfs/Data/StreamingAssets/videos/AF_EF26_1.mp4",
+        "size": 217741,
+        "sha256": "fc93c3f252c6a2548e97cbda16d2b356dd333e75bcd49f2dc396b87dc2eefaf6"
+      },
+      {
+        "path": "update-1.0.1/romfs/Data/StreamingAssets/videos/AF_EF26_3.mp4",
+        "size": 464195,
+        "sha256": "2818f444cdd1f9a64731c5532c414a22feb12f1d98f13116543c2a463736aad6"
+      },
+      {
+        "path": "update-1.0.1/romfs/Data/StreamingAssets/videos/AF_EF28_0.mp4",
+        "size": 832243,
+        "sha256": "bb514d05643c68f0bec98b26b6d7c14c42e61fbf19cbac25459091365e40b14f"
+      },
+      {
+        "path": "update-1.0.1/romfs/Data/StreamingAssets/videos/AF_EF29_0.mp4",
+        "size": 102882,
+        "sha256": "b434af7c05f498347f3845101758094408c3fda0d13e022778bb9e9c3023f48d"
+      },
+      {
+        "path": "update-1.0.1/romfs/Data/StreamingAssets/videos/AF_EF29_1.mp4",
+        "size": 4768754,
+        "sha256": "846d8eb55ffb86289de4c7406adbd1f03489210b6cfdccea846bdd0ec495bf9e"
+      },
+      {
+        "path": "update-1.0.1/romfs/Data/StreamingAssets/videos/AF_EF30_0.mp4",
+        "size": 45128,
+        "sha256": "efd639f0d087fd9554ca1d4a35a886b7996f5f6b53860e74be1b073ec035b087"
+      },
+      {
+        "path": "update-1.0.1/romfs/Data/StreamingAssets/videos/AF_EF30_1.mp4",
+        "size": 1145573,
+        "sha256": "63600937310bead2acae19a592cd52eb1449c46f9cfc13f5dd203100073073e5"
+      },
+      {
+        "path": "update-1.0.1/romfs/Data/StreamingAssets/videos/AF_EF31_0.mp4",
+        "size": 138183,
+        "sha256": "fa01a262b7e6fe3a13fbf816d1c5f1a125f0fb1402fb128ad9fcd4a378cc0c4e"
+      },
+      {
+        "path": "update-1.0.1/romfs/Data/StreamingAssets/videos/AF_EF31_1.mp4",
+        "size": 152259,
+        "sha256": "f5936388469488effd3ee5c888ad3e1ae7ae76433cc8abca156b4aff2104d13b"
+      },
+      {
+        "path": "update-1.0.1/romfs/Data/StreamingAssets/videos/AF_EF32_0.mp4",
+        "size": 11523131,
+        "sha256": "9b71d9059b8ddb746578dd1430b2df83eef4f0f2eb4abcc0c7c60f2aac941223"
+      },
+      {
+        "path": "update-1.0.1/romfs/Data/StreamingAssets/videos/AF_EF33_0.mp4",
+        "size": 607093,
+        "sha256": "c9514b4afc6e79c810cd81d3cc955c70a1db2a268560e3d0a9fab8fc62b70296"
+      },
+      {
+        "path": "update-1.0.1/romfs/Data/StreamingAssets/videos/AF_EF33_1.mp4",
+        "size": 865224,
+        "sha256": "88f8d715633840e33ad334945af6d6940959cea4268df6c45a91cc8dfb45fedc"
+      },
+      {
+        "path": "update-1.0.1/romfs/Data/StreamingAssets/videos/AF_EF34_0.mp4",
+        "size": 11347957,
+        "sha256": "43d3892f702ac3a7ce23fdf8419af73d692e903b5e8f490df1d01f268235803c"
+      },
+      {
+        "path": "update-1.0.1/romfs/Data/StreamingAssets/videos/AF_EF35_0.mp4",
+        "size": 722581,
+        "sha256": "9d9dcc56712250ecb6475f4d2b799688c30b66be0b4e88b1cc20a7ebc7d3574f"
+      },
+      {
+        "path": "update-1.0.1/romfs/Data/StreamingAssets/videos/AF_EF36_0.mp4",
+        "size": 11083672,
+        "sha256": "9105253166ae986842f95144cbbbb3d567ead39da4630eedb3623d94be0511f6"
+      },
+      {
+        "path": "update-1.0.1/romfs/Data/StreamingAssets/videos/AF_EF37_0.mp4",
+        "size": 744978,
+        "sha256": "49190fd5c602195577e98bb647b0702196e24e36fcb7ef20bf98a6f2ad9390a6"
+      },
+      {
+        "path": "update-1.0.1/romfs/Data/StreamingAssets/videos/AF_EF38_0.mp4",
+        "size": 3540562,
+        "sha256": "b57205ef1e8268b24c1a7344df037f888b97f222830e0b8354616b5742cd10cf"
+      },
+      {
+        "path": "update-1.0.1/romfs/Data/StreamingAssets/videos/AF_EF38_1.mp4",
+        "size": 2398231,
+        "sha256": "c6a07a248661f6fe03de110632655b6a9cf4b350ca2f6aaf80f7a2cfb16de5c9"
+      },
+      {
+        "path": "update-1.0.1/romfs/Data/StreamingAssets/videos/AF_EF39_0.mp4",
+        "size": 145164,
+        "sha256": "c317204be59edf45ebb85648b4da6798b5c74447defee15623b7029b1bd3f561"
+      },
+      {
+        "path": "update-1.0.1/romfs/Data/StreamingAssets/videos/AF_EF40_0.mp4",
+        "size": 862211,
+        "sha256": "a6a0f3248278b8e40f4f79702c9f8fd25ccd950eefaf642103f9af4a9cc31528"
+      },
+      {
+        "path": "update-1.0.1/romfs/Data/StreamingAssets/videos/AF_EF41_0.mp4",
+        "size": 2147928,
+        "sha256": "f57b2829df1019dbbc11a426e210252e01ec91dc9426a57adbfbb87e546c40e8"
+      },
+      {
+        "path": "update-1.0.1/romfs/Data/StreamingAssets/videos/AF_EF42_0.mp4",
+        "size": 738669,
+        "sha256": "61e7b0e49754f52d03c26cb1b0234d17ad17722752535a241c58129687079911"
+      },
+      {
+        "path": "update-1.0.1/romfs/Data/StreamingAssets/videos/AF_EF42_1.mp4",
+        "size": 11535596,
+        "sha256": "4d013a3e60b34b59d459bedee7c9ea59141ca7cf68fed7890096fa69b4701204"
+      },
+      {
+        "path": "update-1.0.1/romfs/Data/StreamingAssets/videos/AF_EF42_2.mp4",
+        "size": 11191117,
+        "sha256": "7610975a0d81842f7fdd53ad3d5d84d161aa2b32c743d9a7b76c213b7cd6d022"
+      },
+      {
+        "path": "update-1.0.1/romfs/Data/StreamingAssets/videos/AF_EF43_0.mp4",
+        "size": 77049,
+        "sha256": "4790ed8c9221ef7516a147dc1ab25d10a6b20fd5336b913fca34eee2058aa615"
+      },
+      {
+        "path": "update-1.0.1/romfs/Data/StreamingAssets/videos/AF_EF43_1.mp4",
+        "size": 242331,
+        "sha256": "d235488f1ff3e35eacfd54fdc7261ebe0abe7d590788cc25836924b9c9b3dac5"
+      },
+      {
+        "path": "update-1.0.1/romfs/Data/StreamingAssets/videos/AF_EF43_2.mp4",
+        "size": 59005,
+        "sha256": "5994f9893f411a69049ce0b2f4328131020e9192f3afefce9c748d5db671e447"
+      },
+      {
+        "path": "update-1.0.1/romfs/Data/StreamingAssets/videos/AF_EF44_0.mp4",
+        "size": 2804486,
+        "sha256": "19750bf421fcef5424e1702531dafeae2e815de087bd461a0fe77d312c744cc1"
+      },
+      {
+        "path": "update-1.0.1/romfs/Data/StreamingAssets/videos/AF_EF44_1.mp4",
+        "size": 6010146,
+        "sha256": "af38e5e4633841936923887715ed878ae3603da3798b95718e7ae4498191b861"
+      },
+      {
+        "path": "update-1.0.1/romfs/Data/StreamingAssets/videos/AF_EF44_2.mp4",
+        "size": 968592,
+        "sha256": "d19ec0acfa09a3922eef3dae39178a7b20e96c5532f8fd0c241fc0fdf9950ac7"
+      },
+      {
+        "path": "update-1.0.1/romfs/Data/StreamingAssets/videos/AF_EF44_3.mp4",
+        "size": 3416033,
+        "sha256": "8a1220d4c705a1bebf98bd85e661bcc440d68be9711f9baa35a16ab416b80fb6"
+      },
+      {
+        "path": "update-1.0.1/romfs/Data/StreamingAssets/videos/AF_EF45_0.mp4",
+        "size": 963225,
+        "sha256": "9be457a40ed9a2de39edb05040c6f93790eaa78921659e807960939fdf8a8986"
+      },
+      {
+        "path": "update-1.0.1/romfs/Data/StreamingAssets/videos/AF_EF46_0.mp4",
+        "size": 1215316,
+        "sha256": "32a27415ba661315e3dd1bd66fe925860d0ca156cc783302acd809f634d3a939"
+      },
+      {
+        "path": "update-1.0.1/romfs/Data/StreamingAssets/videos/AF_EF46_1.mp4",
+        "size": 2263969,
+        "sha256": "54ec44b03c2e26037d77e10702d4d0b3a1725bc2c94038d35ef2cf45e9c22dd0"
+      },
+      {
+        "path": "update-1.0.1/romfs/Data/StreamingAssets/videos/AF_EF46_2.mp4",
+        "size": 1890583,
+        "sha256": "c85e9cecc47e6c6757803239f19ea62dfa17dac6029d3df92776e8c8448de57f"
+      },
+      {
+        "path": "update-1.0.1/romfs/Data/StreamingAssets/videos/AF_EF47_0.mp4",
+        "size": 777393,
+        "sha256": "180e2eaf082c6e3863a1a4512c27283c45272c7b34e836da31b1649a03f4d75c"
+      },
+      {
+        "path": "update-1.0.1/romfs/Data/StreamingAssets/videos/AF_EF47_1.mp4",
+        "size": 561234,
+        "sha256": "4341b00907285114060c014bfeb9828a6075e43e00e49c7e36817c39059cd40b"
+      },
+      {
+        "path": "update-1.0.1/romfs/Data/StreamingAssets/videos/AF_EF48_0.mp4",
+        "size": 316294,
+        "sha256": "7942d1c8770e9d5d9f94382c4a4ea5481a15441acb0d86a7c3eba39ed6e8e60e"
+      },
+      {
+        "path": "update-1.0.1/romfs/Data/StreamingAssets/videos/AF_EF48_1.mp4",
+        "size": 200827,
+        "sha256": "8bbba97fd649a20bfcc8869651f80e73d203733f3fde6b0420dfe83a5ea4de98"
+      },
+      {
+        "path": "update-1.0.1/romfs/Data/StreamingAssets/videos/AF_EF49_0.mp4",
+        "size": 225085,
+        "sha256": "8a243b517db4a9e084ee29469a849fddaa62d0eac17931124f8915184aac93ea"
+      },
+      {
+        "path": "update-1.0.1/romfs/Data/StreamingAssets/videos/AF_EF50_0.mp4",
+        "size": 639245,
+        "sha256": "dd6a53a19a2b8fc479a817b78d41173274f2cf94ff5378acedb99087113fcd61"
+      },
+      {
+        "path": "update-1.0.1/romfs/Data/StreamingAssets/videos/AF_EF50_1.mp4",
+        "size": 190618,
+        "sha256": "4818d83481290e5646924f57a78dd7624523a51700e4c5b841b16ebd04e45a89"
+      },
+      {
+        "path": "update-1.0.1/romfs/Data/StreamingAssets/videos/AF_EF51_0.mp4",
+        "size": 253519,
+        "sha256": "3b5ae65f8a7c68e9f5741adfcffa8ed20559cf624d003d33fca26d51c6caa6b8"
+      },
+      {
+        "path": "update-1.0.1/romfs/Data/StreamingAssets/videos/AF_EF52_0.mp4",
+        "size": 2384894,
+        "sha256": "50acdc9c2750c6ea02d017928831946126e9493e043b2628aac7349046cc4de8"
+      },
+      {
+        "path": "update-1.0.1/romfs/Data/StreamingAssets/videos/AF_EF53_0.mp4",
+        "size": 1240947,
+        "sha256": "a5a2328a684e2604c3e834971b5b952b8df8de8a98a7b15b10d5efa63da8678f"
+      },
+      {
+        "path": "update-1.0.1/romfs/Data/StreamingAssets/videos/AF_EF54_0.mp4",
+        "size": 632951,
+        "sha256": "5fce3885840b1961bbe650b082def2be73a04971575cdde867c06fe20ce63c23"
+      },
+      {
+        "path": "update-1.0.1/romfs/Data/StreamingAssets/videos/AF_EF56_0.mp4",
+        "size": 1056618,
+        "sha256": "c648aefd00c6be0db9429dd2cb56505869fd028f757621d7cc8d4bcf7b9e5b25"
+      },
+      {
+        "path": "update-1.0.1/romfs/Data/StreamingAssets/videos/AF_EF57_0.mp4",
+        "size": 237798,
+        "sha256": "1ec707bfd69c9248f3a3fc365863264b15d364e2329fcadf5b7d394f5c8f72bd"
+      },
+      {
+        "path": "update-1.0.1/romfs/Data/StreamingAssets/videos/AF_EF58_0.mp4",
+        "size": 806493,
+        "sha256": "7b35103bb6d2cda156fdc5e1d940c29a6435a7a7f46ca97e3bbfba21244d5b61"
+      },
+      {
+        "path": "update-1.0.1/romfs/Data/StreamingAssets/videos/AF_EF59_0.mp4",
+        "size": 303098,
+        "sha256": "498f51948d514a9fcde38c6e5351e889b24ef1cb888e0a71d05f46ccbdfdfd99"
+      },
+      {
+        "path": "update-1.0.1/romfs/Data/StreamingAssets/videos/AF_EF60_0.mp4",
+        "size": 911479,
+        "sha256": "23976868200582534b9e92410708e5d708532703df093b675acef5ca7a2e7dd8"
+      },
+      {
+        "path": "update-1.0.1/romfs/Data/StreamingAssets/videos/AF_EF61_0.mp4",
+        "size": 11437637,
+        "sha256": "ca6c5bcc00552d6636af6a2614dec5247e7d7f06b26df4533164398c971eb333"
+      },
+      {
+        "path": "update-1.0.1/romfs/Data/StreamingAssets/videos/AF_EF62_0.mp4",
+        "size": 4247268,
+        "sha256": "2b41d3e56e2c842ab9869ecf71e4e28a9dc9cda38d15fa3eab884a6cf01f8e7f"
+      },
+      {
+        "path": "update-1.0.1/romfs/Data/StreamingAssets/videos/AF_EF63_0.mp4",
+        "size": 232042,
+        "sha256": "c8e91062200ed534fc767ca3db4721572d61d5b0371fb4c361f2a06f4fe7adff"
+      },
+      {
+        "path": "update-1.0.1/romfs/Data/StreamingAssets/videos/AF_EF64_0.mp4",
+        "size": 176726,
+        "sha256": "6f5ff93c4155a2299a777466e2f94edf659aad64924b765a662d4a7d89acc761"
+      },
+      {
+        "path": "update-1.0.1/romfs/Data/StreamingAssets/videos/AF_EF64_1.mp4",
+        "size": 1143414,
+        "sha256": "2d7b0b46f85edec9a549561ca85ca86ea2e4e6958f3f37b8e57c3215a505afc1"
+      },
+      {
+        "path": "update-1.0.1/romfs/Data/StreamingAssets/videos/AF_EF65_0.mp4",
+        "size": 2785924,
+        "sha256": "59f9e0ffe70114ed016a4f5a935821816d103a72b2c94c213200e2aca6bf774a"
+      },
+      {
+        "path": "update-1.0.1/romfs/Data/StreamingAssets/videos/AF_EF66_0.mp4",
+        "size": 120521,
+        "sha256": "758ecba2451f78a3afb804903ba30c079e9790437b47ff9ac56799291fa1e035"
+      },
+      {
+        "path": "update-1.0.1/romfs/Data/StreamingAssets/videos/AF_EF67_0.mp4",
+        "size": 135650,
+        "sha256": "c0a12f4bea7f5b3d3529cc3efc553cdec3f50b83189bab7b6204b9bba30aaa3d"
+      },
+      {
+        "path": "update-1.0.1/romfs/Data/StreamingAssets/videos/AF_EF68_0.mp4",
+        "size": 1890630,
+        "sha256": "c6a54a938cd948fbb2c7b4572d1debef6492f4f532883739fa6eac8419ddb01a"
+      },
+      {
+        "path": "update-1.0.1/romfs/Data/StreamingAssets/videos/AF_EF69_0.mp4",
+        "size": 987747,
+        "sha256": "fdddb75334850b7109b773f3e90164ffe336f79197fda2387dac25c4c8b15080"
+      },
+      {
+        "path": "update-1.0.1/romfs/Data/StreamingAssets/videos/AF_EF70_0.mp4",
+        "size": 5520398,
+        "sha256": "aa153be15aa06d1ef92e1ba9de7ca6b01099ddff1b1e6feadea96ce48751cb76"
+      },
+      {
+        "path": "update-1.0.1/romfs/Data/StreamingAssets/videos/AF_EF71_0.mp4",
+        "size": 114552,
+        "sha256": "78aacaf7355f7578eb7ddb566da898eba8b3e14e14f24d85b31440268f6ae574"
+      },
+      {
+        "path": "update-1.0.1/romfs/Data/StreamingAssets/videos/AF_EF72_0.mp4",
+        "size": 231599,
+        "sha256": "d837a7c4a6491609d00959eaba0f56ba17222206cdf0c45028b0dd612d932687"
+      },
+      {
+        "path": "update-1.0.1/romfs/Data/StreamingAssets/videos/op.mp4",
+        "size": 110942676,
+        "sha256": "667b9ffe59102e498d92e540f36fee4ef5966d0c1bf649fdbb68665dd0c9bbbb"
+      },
+      {
+        "path": "update-1.0.1/romfs/Data/StreamingAssets/voice.hpb",
+        "size": 814061568,
+        "sha256": "d400b6ac5615a0a1faffd7c400594b689f3628219b62254b976eaf1e99a10fcd"
+      },
+      {
+        "path": "update-1.0.1/romfs/Data/StreamingAssets/voice.hph",
+        "size": 987904,
+        "sha256": "4f39abe80b6b647d8e873bbcc3c031885da8722d78aff3ce7808f2c0ad3b7e0e"
+      },
+      {
+        "path": "update-1.0.1/romfs/Plugins/libunas.nro",
+        "size": 135168,
+        "sha256": "08c739e6eacf1f64e7eafbf3580af0840bf4d9f9850cfa1b525d4645c558b39b"
+      }
+    ]
+  },
+  "locations": {
+    "global_metadata": {
+      "path": "update-1.0.1/romfs/Data/Managed/Metadata/global-metadata.dat",
+      "size": 11563664,
+      "sha256": "9989b3d0f03583b374b9e7c6c2bcf43dfb5edc8dd49d0b00602cb3c479dbc6d3"
+    },
+    "libunas_nrs": {
+      "status": "not_present",
+      "actual_file": {
+        "path": "update-1.0.1/romfs/Plugins/libunas.nro",
+        "size": 135168,
+        "sha256": "08c739e6eacf1f64e7eafbf3580af0840bf4d9f9850cfa1b525d4645c558b39b"
+      },
+      "note": "1.0.1 RomFS contains libunas.nro, not libunas.nrs"
+    },
+    "unity_assets": [
+      {
+        "path": "update-1.0.1/romfs/Data/globalgamemanagers.assets",
+        "size": 825744,
+        "sha256": "9519f3062692826e223accded434cb83c38fb7dd07fa0e11d5a0039307b60fc5"
+      },
+      {
+        "path": "update-1.0.1/romfs/Data/resources.assets",
+        "size": 26432,
+        "sha256": "7a4a7592b2c765b4b2c1ede51ff20c63874d64d93bf0161f404afe10404a39b8"
+      },
+      {
+        "path": "update-1.0.1/romfs/Data/resources.assets.resS",
+        "size": 351744,
+        "sha256": "072f32daea08fc91b9efdefae7d3499f9339882b20d64e3e922639e705968771"
+      },
+      {
+        "path": "update-1.0.1/romfs/Data/sharedassets0.assets",
+        "size": 23754700,
+        "sha256": "75095e6a04955a0410fa1dc0e06934a9f480432b9a49f203c65dd69f0878f091"
+      },
+      {
+        "path": "update-1.0.1/romfs/Data/sharedassets0.assets.resS",
+        "size": 10221952,
+        "sha256": "3cc27b193e2b4f7c4cfb1bdf5ffb0147c051df8a0e7ea12fd8207e22de5ac919"
+      }
+    ],
+    "uninas": [
+      {
+        "path": "update-1.0.1/romfs/Plugins/libunas.nro",
+        "size": 135168,
+        "sha256": "08c739e6eacf1f64e7eafbf3580af0840bf4d9f9850cfa1b525d4645c558b39b"
+      }
+    ],
+    "shaders": {
+      "status": "not_present_as_loose_files",
+      "files": [],
+      "note": "No standalone files matched; packaged Unity assets were not inspected"
+    },
+    "media": [
+      {
+        "path": "update-1.0.1/romfs/Data/StreamingAssets/videos/AF_EF00_0.mp4",
+        "size": 3071586,
+        "sha256": "8f14eebdb998f48590b7d16c4d0792b833e8ea31b9e7a2532bd596e7f996d55c"
+      },
+      {
+        "path": "update-1.0.1/romfs/Data/StreamingAssets/videos/AF_EF01_0.mp4",
+        "size": 4431735,
+        "sha256": "67d956fcd224cacc0889893228413899a6e9a0c11d81a67ebd5105a690006227"
+      },
+      {
+        "path": "update-1.0.1/romfs/Data/StreamingAssets/videos/AF_EF02_0.mp4",
+        "size": 2899565,
+        "sha256": "665d106a5418129ae956c3c21ad61ca9ab75575d07d0427d3bfec0378be37fc5"
+      },
+      {
+        "path": "update-1.0.1/romfs/Data/StreamingAssets/videos/AF_EF02_1.mp4",
+        "size": 1025215,
+        "sha256": "717cdf2b1a9c35b394a66dd29938e237829e79cf8d51bc78bc4e7bfa6197ec32"
+      },
+      {
+        "path": "update-1.0.1/romfs/Data/StreamingAssets/videos/AF_EF02_2.mp4",
+        "size": 976828,
+        "sha256": "3189cfcbeb3627dfa2e5b6ffca21e3d92790af8f7297de9a35b5151563a80cd3"
+      },
+      {
+        "path": "update-1.0.1/romfs/Data/StreamingAssets/videos/AF_EF03_0.mp4",
+        "size": 1873408,
+        "sha256": "54d6846042053f14d4e3d9dfb59d1b74b37d5ac95a631efd5d09372163b166d7"
+      },
+      {
+        "path": "update-1.0.1/romfs/Data/StreamingAssets/videos/AF_EF03_1.mp4",
+        "size": 3060364,
+        "sha256": "05a2352e4187d1f6c40116a6ceabd97af33eb2a4c770e8fc1881a7e48ca5a816"
+      },
+      {
+        "path": "update-1.0.1/romfs/Data/StreamingAssets/videos/AF_EF03_2.mp4",
+        "size": 1687391,
+        "sha256": "014a00460972a19170fb1ccc8c14331b41df0331e1ef47d201c6df69d47b3b4f"
+      },
+      {
+        "path": "update-1.0.1/romfs/Data/StreamingAssets/videos/AF_EF03_3.mp4",
+        "size": 3887329,
+        "sha256": "0e0aa919731a64bff2326c3a8e40568b84d68ed849bf8cc3be13b73f2bfe8e0c"
+      },
+      {
+        "path": "update-1.0.1/romfs/Data/StreamingAssets/videos/AF_EF04_0.mp4",
+        "size": 6625846,
+        "sha256": "c6271bdd92250ad9768f2de0bb87806c61e403cec6de09397860f1e3683a537a"
+      },
+      {
+        "path": "update-1.0.1/romfs/Data/StreamingAssets/videos/AF_EF05_0.mp4",
+        "size": 6400631,
+        "sha256": "e982699dfa052329b997dea029f5c18f816638fb7a463bc96f56ed29b0f99771"
+      },
+      {
+        "path": "update-1.0.1/romfs/Data/StreamingAssets/videos/AF_EF05_1.mp4",
+        "size": 12018989,
+        "sha256": "1e597048a1624b1593589c17aae012075bfc6356d25f383b87d1f50b9d117dec"
+      },
+      {
+        "path": "update-1.0.1/romfs/Data/StreamingAssets/videos/AF_EF06_0.mp4",
+        "size": 166824,
+        "sha256": "a3378381cad8c0942e270003366f9d8e5b24dbbe90a98689944402f6f447c5d2"
+      },
+      {
+        "path": "update-1.0.1/romfs/Data/StreamingAssets/videos/AF_EF06_1.mp4",
+        "size": 230008,
+        "sha256": "d1bfd82d34d9d3e6b9d5d0a518385ae718c50123461f7b5a2be68e3fcc1f027c"
+      },
+      {
+        "path": "update-1.0.1/romfs/Data/StreamingAssets/videos/AF_EF07_0.mp4",
+        "size": 571065,
+        "sha256": "f2941f8ff44cce5518b5e7c3a310ae54edf12afd854d4b440ce8107d948742f1"
+      },
+      {
+        "path": "update-1.0.1/romfs/Data/StreamingAssets/videos/AF_EF08_0.mp4",
+        "size": 12499070,
+        "sha256": "0f220a24247706cafdbe30452ede5379bec1d75863936cd65956caff786999a5"
+      },
+      {
+        "path": "update-1.0.1/romfs/Data/StreamingAssets/videos/AF_EF09_0.mp4",
+        "size": 12894552,
+        "sha256": "aca3ee531123d8c439da995ec4ba87b94ca3e03f8e31513695345ff0a92168f3"
+      },
+      {
+        "path": "update-1.0.1/romfs/Data/StreamingAssets/videos/AF_EF10_0.mp4",
+        "size": 13151798,
+        "sha256": "1d54e73c5c491f7c6887d0e7b290b5e24fb7e6f863bf7b9bb04a7cee0045ef3b"
+      },
+      {
+        "path": "update-1.0.1/romfs/Data/StreamingAssets/videos/AF_EF11_0.mp4",
+        "size": 12154418,
+        "sha256": "e83efc988364071e39e3a23b5a5c42f72403a4611e0cd91d2f34fa2e2695393d"
+      },
+      {
+        "path": "update-1.0.1/romfs/Data/StreamingAssets/videos/AF_EF12_0.mp4",
+        "size": 12006803,
+        "sha256": "7b8a42661abbb4b6fe563d0831cda0a5817807d911e53ee5aaefd6e0575c961d"
+      },
+      {
+        "path": "update-1.0.1/romfs/Data/StreamingAssets/videos/AF_EF13_0.mp4",
+        "size": 12043920,
+        "sha256": "f9b9b3f9cd60d7fe833a5fc33358d601c100922136ab89e08fb0887b58ba0ed4"
+      },
+      {
+        "path": "update-1.0.1/romfs/Data/StreamingAssets/videos/AF_EF14_0.mp4",
+        "size": 13107184,
+        "sha256": "04971e83cf54fde0718cda14be1b0fb6580bb49bc1cd83cbdca695033b9c46a1"
+      },
+      {
+        "path": "update-1.0.1/romfs/Data/StreamingAssets/videos/AF_EF15_0.mp4",
+        "size": 13035267,
+        "sha256": "7d692ce08db0ec9b67979f199d029dbb9f1ea9906e91d8a5e11b4bfee8350568"
+      },
+      {
+        "path": "update-1.0.1/romfs/Data/StreamingAssets/videos/AF_EF17_0.mp4",
+        "size": 12571920,
+        "sha256": "b3bb0a203ed05e45e92654db421eb04beb842ab79a72ee3dea0b81087fa93377"
+      },
+      {
+        "path": "update-1.0.1/romfs/Data/StreamingAssets/videos/AF_EF18_0.mp4",
+        "size": 8419259,
+        "sha256": "6fc05c8b89b07c1abb5a6a9cd1500902a6ed94fa595cef96767ff6ed27e0d749"
+      },
+      {
+        "path": "update-1.0.1/romfs/Data/StreamingAssets/videos/AF_EF19_0.mp4",
+        "size": 4533938,
+        "sha256": "ed2ff6cdb043299e93118cabda8c6435982bd6274f6a3c8092b4f4f8eaf6307d"
+      },
+      {
+        "path": "update-1.0.1/romfs/Data/StreamingAssets/videos/AF_EF20_0.mp4",
+        "size": 8919661,
+        "sha256": "5c211a2c1d3a8e28e62c30611663ce218c134ed11fc2f9de558d2ae43c64ec73"
+      },
+      {
+        "path": "update-1.0.1/romfs/Data/StreamingAssets/videos/AF_EF21_0.mp4",
+        "size": 15357807,
+        "sha256": "cce3bc553d0c284769db3f427c0cf6ce39ccb02dc2afb307a3edb2bbd07a3f52"
+      },
+      {
+        "path": "update-1.0.1/romfs/Data/StreamingAssets/videos/AF_EF22_0.mp4",
+        "size": 12900531,
+        "sha256": "f66688b8a4ac0c8dfc0b7991b7b8069dfd810f5b8fa167aa27cdf7a07afce242"
+      },
+      {
+        "path": "update-1.0.1/romfs/Data/StreamingAssets/videos/AF_EF23_0.mp4",
+        "size": 3963788,
+        "sha256": "c724967657502e4a1b56aa8d3ede576fe9ab4ad58d8d591b890816e0d7b04b4f"
+      },
+      {
+        "path": "update-1.0.1/romfs/Data/StreamingAssets/videos/AF_EF24_0.mp4",
+        "size": 3507631,
+        "sha256": "c78663771e186e750ee452042e49a682c4def56c8c7743b0a81a2a93df506fdd"
+      },
+      {
+        "path": "update-1.0.1/romfs/Data/StreamingAssets/videos/AF_EF25_0.mp4",
+        "size": 337974,
+        "sha256": "c7eb96a02dd4846b00f168e94124b62acb38a9a0512e84af0ac075053e95cc66"
+      },
+      {
+        "path": "update-1.0.1/romfs/Data/StreamingAssets/videos/AF_EF26_0.mp4",
+        "size": 122583,
+        "sha256": "f48fc568a1cd3c7e330e3df8d8ad1c269cad5f5503ebf5c846b703da544544d7"
+      },
+      {
+        "path": "update-1.0.1/romfs/Data/StreamingAssets/videos/AF_EF26_1.mp4",
+        "size": 217741,
+        "sha256": "fc93c3f252c6a2548e97cbda16d2b356dd333e75bcd49f2dc396b87dc2eefaf6"
+      },
+      {
+        "path": "update-1.0.1/romfs/Data/StreamingAssets/videos/AF_EF26_3.mp4",
+        "size": 464195,
+        "sha256": "2818f444cdd1f9a64731c5532c414a22feb12f1d98f13116543c2a463736aad6"
+      },
+      {
+        "path": "update-1.0.1/romfs/Data/StreamingAssets/videos/AF_EF28_0.mp4",
+        "size": 832243,
+        "sha256": "bb514d05643c68f0bec98b26b6d7c14c42e61fbf19cbac25459091365e40b14f"
+      },
+      {
+        "path": "update-1.0.1/romfs/Data/StreamingAssets/videos/AF_EF29_0.mp4",
+        "size": 102882,
+        "sha256": "b434af7c05f498347f3845101758094408c3fda0d13e022778bb9e9c3023f48d"
+      },
+      {
+        "path": "update-1.0.1/romfs/Data/StreamingAssets/videos/AF_EF29_1.mp4",
+        "size": 4768754,
+        "sha256": "846d8eb55ffb86289de4c7406adbd1f03489210b6cfdccea846bdd0ec495bf9e"
+      },
+      {
+        "path": "update-1.0.1/romfs/Data/StreamingAssets/videos/AF_EF30_0.mp4",
+        "size": 45128,
+        "sha256": "efd639f0d087fd9554ca1d4a35a886b7996f5f6b53860e74be1b073ec035b087"
+      },
+      {
+        "path": "update-1.0.1/romfs/Data/StreamingAssets/videos/AF_EF30_1.mp4",
+        "size": 1145573,
+        "sha256": "63600937310bead2acae19a592cd52eb1449c46f9cfc13f5dd203100073073e5"
+      },
+      {
+        "path": "update-1.0.1/romfs/Data/StreamingAssets/videos/AF_EF31_0.mp4",
+        "size": 138183,
+        "sha256": "fa01a262b7e6fe3a13fbf816d1c5f1a125f0fb1402fb128ad9fcd4a378cc0c4e"
+      },
+      {
+        "path": "update-1.0.1/romfs/Data/StreamingAssets/videos/AF_EF31_1.mp4",
+        "size": 152259,
+        "sha256": "f5936388469488effd3ee5c888ad3e1ae7ae76433cc8abca156b4aff2104d13b"
+      },
+      {
+        "path": "update-1.0.1/romfs/Data/StreamingAssets/videos/AF_EF32_0.mp4",
+        "size": 11523131,
+        "sha256": "9b71d9059b8ddb746578dd1430b2df83eef4f0f2eb4abcc0c7c60f2aac941223"
+      },
+      {
+        "path": "update-1.0.1/romfs/Data/StreamingAssets/videos/AF_EF33_0.mp4",
+        "size": 607093,
+        "sha256": "c9514b4afc6e79c810cd81d3cc955c70a1db2a268560e3d0a9fab8fc62b70296"
+      },
+      {
+        "path": "update-1.0.1/romfs/Data/StreamingAssets/videos/AF_EF33_1.mp4",
+        "size": 865224,
+        "sha256": "88f8d715633840e33ad334945af6d6940959cea4268df6c45a91cc8dfb45fedc"
+      },
+      {
+        "path": "update-1.0.1/romfs/Data/StreamingAssets/videos/AF_EF34_0.mp4",
+        "size": 11347957,
+        "sha256": "43d3892f702ac3a7ce23fdf8419af73d692e903b5e8f490df1d01f268235803c"
+      },
+      {
+        "path": "update-1.0.1/romfs/Data/StreamingAssets/videos/AF_EF35_0.mp4",
+        "size": 722581,
+        "sha256": "9d9dcc56712250ecb6475f4d2b799688c30b66be0b4e88b1cc20a7ebc7d3574f"
+      },
+      {
+        "path": "update-1.0.1/romfs/Data/StreamingAssets/videos/AF_EF36_0.mp4",
+        "size": 11083672,
+        "sha256": "9105253166ae986842f95144cbbbb3d567ead39da4630eedb3623d94be0511f6"
+      },
+      {
+        "path": "update-1.0.1/romfs/Data/StreamingAssets/videos/AF_EF37_0.mp4",
+        "size": 744978,
+        "sha256": "49190fd5c602195577e98bb647b0702196e24e36fcb7ef20bf98a6f2ad9390a6"
+      },
+      {
+        "path": "update-1.0.1/romfs/Data/StreamingAssets/videos/AF_EF38_0.mp4",
+        "size": 3540562,
+        "sha256": "b57205ef1e8268b24c1a7344df037f888b97f222830e0b8354616b5742cd10cf"
+      },
+      {
+        "path": "update-1.0.1/romfs/Data/StreamingAssets/videos/AF_EF38_1.mp4",
+        "size": 2398231,
+        "sha256": "c6a07a248661f6fe03de110632655b6a9cf4b350ca2f6aaf80f7a2cfb16de5c9"
+      },
+      {
+        "path": "update-1.0.1/romfs/Data/StreamingAssets/videos/AF_EF39_0.mp4",
+        "size": 145164,
+        "sha256": "c317204be59edf45ebb85648b4da6798b5c74447defee15623b7029b1bd3f561"
+      },
+      {
+        "path": "update-1.0.1/romfs/Data/StreamingAssets/videos/AF_EF40_0.mp4",
+        "size": 862211,
+        "sha256": "a6a0f3248278b8e40f4f79702c9f8fd25ccd950eefaf642103f9af4a9cc31528"
+      },
+      {
+        "path": "update-1.0.1/romfs/Data/StreamingAssets/videos/AF_EF41_0.mp4",
+        "size": 2147928,
+        "sha256": "f57b2829df1019dbbc11a426e210252e01ec91dc9426a57adbfbb87e546c40e8"
+      },
+      {
+        "path": "update-1.0.1/romfs/Data/StreamingAssets/videos/AF_EF42_0.mp4",
+        "size": 738669,
+        "sha256": "61e7b0e49754f52d03c26cb1b0234d17ad17722752535a241c58129687079911"
+      },
+      {
+        "path": "update-1.0.1/romfs/Data/StreamingAssets/videos/AF_EF42_1.mp4",
+        "size": 11535596,
+        "sha256": "4d013a3e60b34b59d459bedee7c9ea59141ca7cf68fed7890096fa69b4701204"
+      },
+      {
+        "path": "update-1.0.1/romfs/Data/StreamingAssets/videos/AF_EF42_2.mp4",
+        "size": 11191117,
+        "sha256": "7610975a0d81842f7fdd53ad3d5d84d161aa2b32c743d9a7b76c213b7cd6d022"
+      },
+      {
+        "path": "update-1.0.1/romfs/Data/StreamingAssets/videos/AF_EF43_0.mp4",
+        "size": 77049,
+        "sha256": "4790ed8c9221ef7516a147dc1ab25d10a6b20fd5336b913fca34eee2058aa615"
+      },
+      {
+        "path": "update-1.0.1/romfs/Data/StreamingAssets/videos/AF_EF43_1.mp4",
+        "size": 242331,
+        "sha256": "d235488f1ff3e35eacfd54fdc7261ebe0abe7d590788cc25836924b9c9b3dac5"
+      },
+      {
+        "path": "update-1.0.1/romfs/Data/StreamingAssets/videos/AF_EF43_2.mp4",
+        "size": 59005,
+        "sha256": "5994f9893f411a69049ce0b2f4328131020e9192f3afefce9c748d5db671e447"
+      },
+      {
+        "path": "update-1.0.1/romfs/Data/StreamingAssets/videos/AF_EF44_0.mp4",
+        "size": 2804486,
+        "sha256": "19750bf421fcef5424e1702531dafeae2e815de087bd461a0fe77d312c744cc1"
+      },
+      {
+        "path": "update-1.0.1/romfs/Data/StreamingAssets/videos/AF_EF44_1.mp4",
+        "size": 6010146,
+        "sha256": "af38e5e4633841936923887715ed878ae3603da3798b95718e7ae4498191b861"
+      },
+      {
+        "path": "update-1.0.1/romfs/Data/StreamingAssets/videos/AF_EF44_2.mp4",
+        "size": 968592,
+        "sha256": "d19ec0acfa09a3922eef3dae39178a7b20e96c5532f8fd0c241fc0fdf9950ac7"
+      },
+      {
+        "path": "update-1.0.1/romfs/Data/StreamingAssets/videos/AF_EF44_3.mp4",
+        "size": 3416033,
+        "sha256": "8a1220d4c705a1bebf98bd85e661bcc440d68be9711f9baa35a16ab416b80fb6"
+      },
+      {
+        "path": "update-1.0.1/romfs/Data/StreamingAssets/videos/AF_EF45_0.mp4",
+        "size": 963225,
+        "sha256": "9be457a40ed9a2de39edb05040c6f93790eaa78921659e807960939fdf8a8986"
+      },
+      {
+        "path": "update-1.0.1/romfs/Data/StreamingAssets/videos/AF_EF46_0.mp4",
+        "size": 1215316,
+        "sha256": "32a27415ba661315e3dd1bd66fe925860d0ca156cc783302acd809f634d3a939"
+      },
+      {
+        "path": "update-1.0.1/romfs/Data/StreamingAssets/videos/AF_EF46_1.mp4",
+        "size": 2263969,
+        "sha256": "54ec44b03c2e26037d77e10702d4d0b3a1725bc2c94038d35ef2cf45e9c22dd0"
+      },
+      {
+        "path": "update-1.0.1/romfs/Data/StreamingAssets/videos/AF_EF46_2.mp4",
+        "size": 1890583,
+        "sha256": "c85e9cecc47e6c6757803239f19ea62dfa17dac6029d3df92776e8c8448de57f"
+      },
+      {
+        "path": "update-1.0.1/romfs/Data/StreamingAssets/videos/AF_EF47_0.mp4",
+        "size": 777393,
+        "sha256": "180e2eaf082c6e3863a1a4512c27283c45272c7b34e836da31b1649a03f4d75c"
+      },
+      {
+        "path": "update-1.0.1/romfs/Data/StreamingAssets/videos/AF_EF47_1.mp4",
+        "size": 561234,
+        "sha256": "4341b00907285114060c014bfeb9828a6075e43e00e49c7e36817c39059cd40b"
+      },
+      {
+        "path": "update-1.0.1/romfs/Data/StreamingAssets/videos/AF_EF48_0.mp4",
+        "size": 316294,
+        "sha256": "7942d1c8770e9d5d9f94382c4a4ea5481a15441acb0d86a7c3eba39ed6e8e60e"
+      },
+      {
+        "path": "update-1.0.1/romfs/Data/StreamingAssets/videos/AF_EF48_1.mp4",
+        "size": 200827,
+        "sha256": "8bbba97fd649a20bfcc8869651f80e73d203733f3fde6b0420dfe83a5ea4de98"
+      },
+      {
+        "path": "update-1.0.1/romfs/Data/StreamingAssets/videos/AF_EF49_0.mp4",
+        "size": 225085,
+        "sha256": "8a243b517db4a9e084ee29469a849fddaa62d0eac17931124f8915184aac93ea"
+      },
+      {
+        "path": "update-1.0.1/romfs/Data/StreamingAssets/videos/AF_EF50_0.mp4",
+        "size": 639245,
+        "sha256": "dd6a53a19a2b8fc479a817b78d41173274f2cf94ff5378acedb99087113fcd61"
+      },
+      {
+        "path": "update-1.0.1/romfs/Data/StreamingAssets/videos/AF_EF50_1.mp4",
+        "size": 190618,
+        "sha256": "4818d83481290e5646924f57a78dd7624523a51700e4c5b841b16ebd04e45a89"
+      },
+      {
+        "path": "update-1.0.1/romfs/Data/StreamingAssets/videos/AF_EF51_0.mp4",
+        "size": 253519,
+        "sha256": "3b5ae65f8a7c68e9f5741adfcffa8ed20559cf624d003d33fca26d51c6caa6b8"
+      },
+      {
+        "path": "update-1.0.1/romfs/Data/StreamingAssets/videos/AF_EF52_0.mp4",
+        "size": 2384894,
+        "sha256": "50acdc9c2750c6ea02d017928831946126e9493e043b2628aac7349046cc4de8"
+      },
+      {
+        "path": "update-1.0.1/romfs/Data/StreamingAssets/videos/AF_EF53_0.mp4",
+        "size": 1240947,
+        "sha256": "a5a2328a684e2604c3e834971b5b952b8df8de8a98a7b15b10d5efa63da8678f"
+      },
+      {
+        "path": "update-1.0.1/romfs/Data/StreamingAssets/videos/AF_EF54_0.mp4",
+        "size": 632951,
+        "sha256": "5fce3885840b1961bbe650b082def2be73a04971575cdde867c06fe20ce63c23"
+      },
+      {
+        "path": "update-1.0.1/romfs/Data/StreamingAssets/videos/AF_EF56_0.mp4",
+        "size": 1056618,
+        "sha256": "c648aefd00c6be0db9429dd2cb56505869fd028f757621d7cc8d4bcf7b9e5b25"
+      },
+      {
+        "path": "update-1.0.1/romfs/Data/StreamingAssets/videos/AF_EF57_0.mp4",
+        "size": 237798,
+        "sha256": "1ec707bfd69c9248f3a3fc365863264b15d364e2329fcadf5b7d394f5c8f72bd"
+      },
+      {
+        "path": "update-1.0.1/romfs/Data/StreamingAssets/videos/AF_EF58_0.mp4",
+        "size": 806493,
+        "sha256": "7b35103bb6d2cda156fdc5e1d940c29a6435a7a7f46ca97e3bbfba21244d5b61"
+      },
+      {
+        "path": "update-1.0.1/romfs/Data/StreamingAssets/videos/AF_EF59_0.mp4",
+        "size": 303098,
+        "sha256": "498f51948d514a9fcde38c6e5351e889b24ef1cb888e0a71d05f46ccbdfdfd99"
+      },
+      {
+        "path": "update-1.0.1/romfs/Data/StreamingAssets/videos/AF_EF60_0.mp4",
+        "size": 911479,
+        "sha256": "23976868200582534b9e92410708e5d708532703df093b675acef5ca7a2e7dd8"
+      },
+      {
+        "path": "update-1.0.1/romfs/Data/StreamingAssets/videos/AF_EF61_0.mp4",
+        "size": 11437637,
+        "sha256": "ca6c5bcc00552d6636af6a2614dec5247e7d7f06b26df4533164398c971eb333"
+      },
+      {
+        "path": "update-1.0.1/romfs/Data/StreamingAssets/videos/AF_EF62_0.mp4",
+        "size": 4247268,
+        "sha256": "2b41d3e56e2c842ab9869ecf71e4e28a9dc9cda38d15fa3eab884a6cf01f8e7f"
+      },
+      {
+        "path": "update-1.0.1/romfs/Data/StreamingAssets/videos/AF_EF63_0.mp4",
+        "size": 232042,
+        "sha256": "c8e91062200ed534fc767ca3db4721572d61d5b0371fb4c361f2a06f4fe7adff"
+      },
+      {
+        "path": "update-1.0.1/romfs/Data/StreamingAssets/videos/AF_EF64_0.mp4",
+        "size": 176726,
+        "sha256": "6f5ff93c4155a2299a777466e2f94edf659aad64924b765a662d4a7d89acc761"
+      },
+      {
+        "path": "update-1.0.1/romfs/Data/StreamingAssets/videos/AF_EF64_1.mp4",
+        "size": 1143414,
+        "sha256": "2d7b0b46f85edec9a549561ca85ca86ea2e4e6958f3f37b8e57c3215a505afc1"
+      },
+      {
+        "path": "update-1.0.1/romfs/Data/StreamingAssets/videos/AF_EF65_0.mp4",
+        "size": 2785924,
+        "sha256": "59f9e0ffe70114ed016a4f5a935821816d103a72b2c94c213200e2aca6bf774a"
+      },
+      {
+        "path": "update-1.0.1/romfs/Data/StreamingAssets/videos/AF_EF66_0.mp4",
+        "size": 120521,
+        "sha256": "758ecba2451f78a3afb804903ba30c079e9790437b47ff9ac56799291fa1e035"
+      },
+      {
+        "path": "update-1.0.1/romfs/Data/StreamingAssets/videos/AF_EF67_0.mp4",
+        "size": 135650,
+        "sha256": "c0a12f4bea7f5b3d3529cc3efc553cdec3f50b83189bab7b6204b9bba30aaa3d"
+      },
+      {
+        "path": "update-1.0.1/romfs/Data/StreamingAssets/videos/AF_EF68_0.mp4",
+        "size": 1890630,
+        "sha256": "c6a54a938cd948fbb2c7b4572d1debef6492f4f532883739fa6eac8419ddb01a"
+      },
+      {
+        "path": "update-1.0.1/romfs/Data/StreamingAssets/videos/AF_EF69_0.mp4",
+        "size": 987747,
+        "sha256": "fdddb75334850b7109b773f3e90164ffe336f79197fda2387dac25c4c8b15080"
+      },
+      {
+        "path": "update-1.0.1/romfs/Data/StreamingAssets/videos/AF_EF70_0.mp4",
+        "size": 5520398,
+        "sha256": "aa153be15aa06d1ef92e1ba9de7ca6b01099ddff1b1e6feadea96ce48751cb76"
+      },
+      {
+        "path": "update-1.0.1/romfs/Data/StreamingAssets/videos/AF_EF71_0.mp4",
+        "size": 114552,
+        "sha256": "78aacaf7355f7578eb7ddb566da898eba8b3e14e14f24d85b31440268f6ae574"
+      },
+      {
+        "path": "update-1.0.1/romfs/Data/StreamingAssets/videos/AF_EF72_0.mp4",
+        "size": 231599,
+        "sha256": "d837a7c4a6491609d00959eaba0f56ba17222206cdf0c45028b0dd612d932687"
+      },
+      {
+        "path": "update-1.0.1/romfs/Data/StreamingAssets/videos/op.mp4",
+        "size": 110942676,
+        "sha256": "667b9ffe59102e498d92e540f36fee4ef5966d0c1bf649fdbb68665dd0c9bbbb"
+      }
+    ]
+  }
+}

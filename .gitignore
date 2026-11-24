@@ -1,0 +1,14 @@
+# Copyrighted game payloads and local secrets
+game-data/
+game-data-*/
+secrets/
+*.ipa
+
+# Extraction scratch, logs and Python caches
+.scratch/
+extracted/
+*.log
+*.tmp
+*.part
+__pycache__/
+*.py[cod]

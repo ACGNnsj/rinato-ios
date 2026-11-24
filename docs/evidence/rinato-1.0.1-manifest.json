@@ -783,6 +783,36 @@
     },
     "media": [
       {
+        "path": "update-1.0.1/romfs/Data/StreamingAssets/adv.hpb",
+        "size": 549858560,
+        "sha256": "d7644d057b687637a8f8063ab3d2a648fd87e31eccb00cd33c6a5908b26dae02"
+      },
+      {
+        "path": "update-1.0.1/romfs/Data/StreamingAssets/adv.hph",
+        "size": 137856,
+        "sha256": "2d4f6571e4ba7c0ad657d32ee3d38d680e956d3d0408f809c9338076d0511be2"
+      },
+      {
+        "path": "update-1.0.1/romfs/Data/StreamingAssets/bgm.hpb",
+        "size": 103921856,
+        "sha256": "62b79bce92804ce54414d7ab6c0bce4756ae6c9366c5b6b67da3f747a8da3f42"
+      },
+      {
+        "path": "update-1.0.1/romfs/Data/StreamingAssets/bgm.hph",
+        "size": 13696,
+        "sha256": "5d4752f55eb823cb4f34566fd9c45d79994d735135c9681bfe292cbddd3bd948"
+      },
+      {
+        "path": "update-1.0.1/romfs/Data/StreamingAssets/data.hpb",
+        "size": 97289344,
+        "sha256": "715d6eefa00063a847b6680bb0ff18179233aa3bbdf58fb633a8f714a0af633f"
+      },
+      {
+        "path": "update-1.0.1/romfs/Data/StreamingAssets/data.hph",
+        "size": 5760,
+        "sha256": "4d6c052240b7472a9a15567e4e0f10de29154c5bde89927bb52422acd3f43abb"
+      },
+      {
         "path": "update-1.0.1/romfs/Data/StreamingAssets/videos/AF_EF00_0.mp4",
         "size": 3071586,
         "sha256": "8f14eebdb998f48590b7d16c4d0792b833e8ea31b9e7a2532bd596e7f996d55c"
@@ -1271,6 +1301,16 @@
         "path": "update-1.0.1/romfs/Data/StreamingAssets/videos/op.mp4",
         "size": 110942676,
         "sha256": "667b9ffe59102e498d92e540f36fee4ef5966d0c1bf649fdbb68665dd0c9bbbb"
+      },
+      {
+        "path": "update-1.0.1/romfs/Data/StreamingAssets/voice.hpb",
+        "size": 814061568,
+        "sha256": "d400b6ac5615a0a1faffd7c400594b689f3628219b62254b976eaf1e99a10fcd"
+      },
+      {
+        "path": "update-1.0.1/romfs/Data/StreamingAssets/voice.hph",
+        "size": 987904,
+        "sha256": "4f39abe80b6b647d8e873bbcc3c031885da8722d78aff3ce7808f2c0ad3b7e0e"
       }
     ]
   }

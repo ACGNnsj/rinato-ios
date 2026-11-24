@@ -116,6 +116,29 @@ class PackageManifestTests(unittest.TestCase):
             assert manifest["locations"][category]["status"] == "not_present_as_loose_files"
             assert manifest["locations"][category]["files"] == []
 
+    def test_real_hpb_hph_audio_archives_are_media(self):
+        expected = set()
+        for stem in ("adv", "bgm", "data", "voice"):
+            for suffix in (".hpb", ".hph"):
+                relative = f"Data/StreamingAssets/{stem}{suffix}"
+                put(self.data, f"update-1.0.1/romfs/{relative}", f"{stem}{suffix}".encode())
+                expected.add(f"update-1.0.1/romfs/{relative}")
+        manifest = build_manifest(self.app, self.update, self.data)
+        actual = {record["path"] for record in manifest["locations"]["media"]}
+        assert expected <= actual, f"Missing media records: {sorted(expected - actual)}"
+        assert len(actual) == 10
+
+    def test_partition_colon_names_fail(self):
+        for text in ("C:payload", "file:ads", "C:", "C:/payload", r"C:\payload",
+                     r"\\?\C:\payload", r"\\?\UNC\server\share\payload"):
+            with self.subTest(name=text):
+                name = text.encode() + b"\0"
+                raw = bytearray(struct.pack("<4sIII", b"PFS0", 1, len(name), 0))
+                raw += struct.pack("<QQII", 0, 0, 0, 0)
+                raw += name
+                with self.assertRaisesRegex(ValueError, "Unsafe partition filename"):
+                    partition_entries(io.BytesIO(raw), 0, len(raw))
+
     def test_partition_path_traversal_fails(self):
         # PFS0 header, one 24-byte entry, and an unsafe name string.
         name = b"../payload.bin\0"

@@ -54,8 +54,8 @@ def partition_entries(f, offset, bound, magic=b"PFS0", stride=24):
         end = strings.find(b"\0", nameoff)
         require(end >= 0, "Unterminated partition filename")
         name = strings[nameoff:end].decode("utf-8")
-        require(name not in ("", ".", "..") and "/" not in name and "\\" not in name,
-                "Unsafe partition filename")
+        require(name not in ("", ".", "..") and "/" not in name and "\\" not in name and
+                ":" not in name, "Unsafe partition filename")
         require(name not in names, "Duplicate partition filename")
         names.add(name)
         require(size + off + length <= bound, "Partition entry out of bounds")
@@ -94,7 +94,7 @@ def classify_locations(files):
     singles = {"global_metadata": [], "libunas_nrs": []}
     libunas_nro = []
     media_suffixes = {".mp4", ".webm", ".usm", ".bk2", ".bik", ".wav", ".ogg", ".adx",
-                      ".acb", ".awb", ".aac", ".m4a", ".at9", ".wem"}
+                      ".acb", ".awb", ".aac", ".m4a", ".at9", ".wem", ".hpb", ".hph"}
     for record in files:
         path = record["path"]
         lower = path.lower()

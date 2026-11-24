@@ -50,3 +50,9 @@
 - Source: tarball of seedds/nxnative @ 551228c fetched via gh API (local git egress blocked; full-tree audit pending re-download — first attempt truncated, background re-download running).
 - Games table (dm/games/README.md, 289 rows): many Unity IL2CPP + NVN titles, but NO profile for 010008702297A000 (Rinato). Expectation: new provisional game profile via the documented DM_GAMES_DIR path, not a ready-made build.
 - Reuse plan stands: audit NSO rewriter + HLE + NVN→Metal on the pinned tree, then build Rinato as a new profile. Our probe host work (Tasks 1-2) remains valid input either way.
+
+## Round 9 process model (from docs/agents/game-patches.md, partial tree)
+
+- New game = new profile under dm/games/<title-id>/ with patches.py keyed by NSO build ID, shader tables from shader_split.py, host rows and profile keys. docs/reference/rewriter.md not yet extracted (truncated tarball) — read on re-download.
+- Patch bindings (loosest-correct wins): host > sdk > engine > game > build. Our Unity IL2CPP title will most likely need engine-binding (Unity version) + game-binding patches; build-binding only as last resort (redone every update).
+- Locators fail closed (fingerprint must match exactly once or nothing changes) — compatible with our no-fake-evidence rule.

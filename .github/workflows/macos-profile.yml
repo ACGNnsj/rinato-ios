@@ -1,0 +1,44 @@
+name: macos-profile
+
+# Validates our committed game profile against the real upstream loader on a
+# GitHub-hosted macOS runner. No game binaries, keys or extracts involved:
+# only docs/evidence/rinato-profile/*.tsv (plain-text tables) plus the public
+# upstream toolchain (shallow clone). Proves runner+tree+profile interop for the
+# future Mac rewrite chain.
+
+on:
+  push:
+    branches: [rinato-native-m0]
+    paths:
+      - "docs/evidence/rinato-profile/**"
+      - ".github/workflows/macos-profile.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: macos-profile-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validate:
+    name: profile header on macOS
+    runs-on: macos-15
+    timeout-minutes: 20
+
+    steps:
+      - name: Check out sources
+        uses: actions/checkout@v4
+
+      - name: Shallow-clone upstream toolchain
+        run: git clone --depth 1 https://github.com/seedds/nxnative.git /tmp/nxnative
+
+      - name: Generate game profile header
+        run: |
+          set -euo pipefail
+          python3 /tmp/nxnative/dm/games/game.py header \
+            "$PWD/docs/evidence/rinato-profile/game.tsv" /tmp/game_profile.h
+          test -s /tmp/game_profile.h
+          grep -q 0831254e /tmp/game_profile.h
+

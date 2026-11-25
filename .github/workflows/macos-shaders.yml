@@ -6,6 +6,7 @@ name: macos-shaders
 # encrypted-RomFS decision (morning item). No keys, no RomFS bytes, no extracts
 # in git. Profile is copied into the clone dm/games/ because both patch_nso and
 # dmsh_chain.load_game() read it from there, not from DM_GAMES_DIR.
+# (re-registration touch: previous push registered without workflow_dispatch)
 
 on:
   push:

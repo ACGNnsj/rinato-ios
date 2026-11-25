@@ -36,4 +36,14 @@ CI success is NOT M0 device success. M0 stays OPEN until probe.log + JIT-enabled
 2. On Windows: install the IPA with a sideload tool (Sideloadly/AltStore/Apple Configurator path — record exact tool + version), then enable JIT (pymobiledevice3 `pymobiledevice3 developer dvt ...` or equivalent — record exact command, version, stdout/stderr verbatim).
 3. Launch Rinato probe, wait for Metal clear screen, copy the on-screen log (PROBE key=value lines) and take a screenshot of the clear color.
 4. Save the log as docs/evidence/M0-device-log.txt (verbatim, unedited) and run: python tools/rinato_probe_log.py docs/evidence/M0-device-log.txt
-5. The script renders MEASURED vs UNKNOWN per required key; every key not present in the log stays UNKNOWN. Attach the screenshot next to the log; the screenshot alone proves nothing without matching log lines.
+5. The script renders MEASURED vs UNKNOWN per required key; every key not present in the log stays UNKNOWN. Attach the screenshot next to the log; the screenshot alone proves (truncated line in original) nothing without matching log lines.
+## Delivered probe.log (v1 IPA run, 2026-11-25) — PARTIAL
+
+User delivered probe.log (22 lines, session 2026-11-25 00:26:30 UTC). v1 order: fixed/PAC ran, JIT killed, memory+metal never ran.
+
+Raw (verbatim): metal_device=Apple A13 GPU; metal_family_apple7/8=no; abi=arm64; ptrauth_compile=0; hw=iPhone12,5 arm64e; os 27.2.1 (24B156); fixed_value 0x5a17c0de match yes; pac_sign unsupported (arm64 slice, not arm64e); pac_indirect/return ok match yes; jit_mmap=ok then killed (no streamer; matches crash-log CODESIGNING Invalid Page in probeJit).
+
+tools/rinato_probe_log.py verdict: MEASURED = abi, ptrauth_compile, fixed_value, pac_indirect, jit_mmap, metal_device. UNKNOWN = mem_available, mem_alloc, metal_drawable, metal_presents.
+
+M0 verdict: PARTIAL PASS, not go/no-go. Memory + Metal presentation + full JIT row need the v2 IPA run (JIT last; streamer for the JIT row).
+

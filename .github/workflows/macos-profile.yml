@@ -38,7 +38,7 @@ jobs:
         run: |
           set -euo pipefail
           python3 /tmp/nxnative/dm/games/game.py header \
-            "$PWD/docs/evidence/rinato-profile/game.tsv" /tmp/game_profile.h
+            "$PWD/docs/evidence/rinato-profile" /tmp/game_profile.h
           test -s /tmp/game_profile.h
           grep -q 0831254e /tmp/game_profile.h
 

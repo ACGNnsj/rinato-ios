@@ -19,8 +19,6 @@ concurrency:
 
 jobs:
   shaders:
-jobs:
-  shaders:
     name: split + dmsh_build on macOS
     runs-on: macos-15
     timeout-minutes: 60

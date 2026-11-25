@@ -30,6 +30,12 @@ Method: update-1.0.1 `main`/`subsdk0`/`sdk` parsed with reused `nso.py` (dump sc
 
 No namespace is fully missing an HLE home. Only movie demux-open is a concrete suspect.
 
+## Symbol-level binding closure (measured 2026-11-25)
+
+- subsdk0 665 imports: 662 resolve against sdk exports, 9 against main, **0 unresolved**. Its android:: binder stack is in-process Stagefright inside sdk — no external IPC daemon needed. Earlier open item closed.
+- main 944 imports: **941 resolve** against sdk+subsdk0+self exports; 3 left are `nnProfiler*` x2 (profiler, benign) + 1 TLS thunk (linker artifact). Correction to the table above: the ExeFS `sdk` file IS the nnSdk runtime (SVC wrappers + IPC stubs, 23037 exports), so imports bind to sdk stubs and the HLE files implement the *service side* behind them — the namespace→HLE mapping above is the service-level gap view, and it stands.
+- rtld is replaced by the host per upstream design (not loaded).
+
 ## subsdk0 (665 imports, build 14765b1d, 9750 exports)
 
 Needs: nn::os/audio/sf + an android:: binder IPC stack (Parcel/BBinder/SurfaceComposerClient ~100) + c-lib. OPEN: how nxnative serves subsdk0's binder IPC on iOS was not verified in this pass (hle_movie*.c implement decode; module-load/IPC path unchecked). Bring-up item, not a claim.

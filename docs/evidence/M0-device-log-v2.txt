@@ -1,0 +1,34 @@
+# Transcribed from user screenshot IMG_4863.PNG (v2 IPA run); pending File-Sharing original for the JIT tail.
+PROBE metal_device=Apple A13 GPU
+PROBE metal_family_apple7=no
+PROBE metal_family_apple8=no
+PROBE session_start=2026-11-25 11:04:18 +0000
+PROBE fault_guard=installed
+PROBE abi=arm64
+PROBE ptrauth_compile=0
+PROBE pointer_bits=64
+PROBE hw_cputype=0x0100000c
+PROBE hw_cpusubtype=2 (arm64e)
+PROBE hw_machine=iPhone12,5
+PROBE os_version=Version 27.2.1 (Build 24B156)
+PROBE fixed_value=0x5a17c0de
+PROBE fixed_value_expected=0x5a17c0de
+PROBE fixed_value_match=yes
+PROBE pac_sign=unsupported reason=compiled_slice_is_arm64_not_arm64e
+PROBE pac_indirect=ok value=0x5a17c0cf
+PROBE pac_indirect_expected=0x5a17c0cf
+PROBE pac_indirect_match=yes
+PROBE pac_return=ok value=0x0
+PROBE pac_return_match=yes
+PROBE mem_physical=3931062272
+PROBE mem_available=2192308576
+PROBE mem_footprint=7653024
+PROBE mem_resident=56426496
+PROBE mem_alloc_budget=268435456
+PROBE mem_alloc=ok budget=268435456 allocated=268435456
+PROBE documents=ok writable=yes
+PROBE metal_drawable=1242x2688
+PROBE metal_presents=1
+PROBE metal_clear_color=0.06,0.42,0.55,1.0
+PROBE metal_gpu=Apple A13 GPU
+PROBE screenshot_hint=first_frame_is_the_Metal_clear_color

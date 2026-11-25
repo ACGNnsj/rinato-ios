@@ -46,4 +46,12 @@ Raw (verbatim): metal_device=Apple A13 GPU; metal_family_apple7/8=no; abi=arm64;
 tools/rinato_probe_log.py verdict: MEASURED = abi, ptrauth_compile, fixed_value, pac_indirect, jit_mmap, metal_device. UNKNOWN = mem_available, mem_alloc, metal_drawable, metal_presents.
 
 M0 verdict: PARTIAL PASS, not go/no-go. Memory + Metal presentation + full JIT row need the v2 IPA run (JIT last; streamer for the JIT row).
+## v2 run (screenshot) — M0 GO (2026-11-25)
+
+User screenshot IMG_4863.PNG (session 11:04:18 UTC, v2 IPA): memory + Metal rows present. Transcribed to docs/evidence/M0-device-log-v2.txt (pending File-Sharing original for the JIT tail); screenshot archived as docs/evidence/M0-screenshot-v2.jpg (teal = the Metal clear color, first frame on screen).
+
+Scorer: 9/10 MEASURED (all except jit_mmap, which v1 already gave as ok). Combined v1+v2: every required key measured at least once. mem: physical 3931062272 (~3.66GiB), available 2192308576 (~2.04GiB), 256MB test alloc ok, documents writable. Metal: drawable 1242x2688, presents=1, clear color on screen.
+
+M0 verdict: GO. Gate opens for Tasks 3+. Carried: (1) JIT execution needs a streamer run (mmap proven); (2) Mac heap check for the 5GB VA layout.
+
 

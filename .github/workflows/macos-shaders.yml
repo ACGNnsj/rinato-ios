@@ -1,93 +1,23 @@
 name: macos-shaders
 
-# Phase 1: main-only shader split + Mac dmsh_build on a GitHub-hosted macOS runner.
-# Uses the decrypted update-ExeFS main (already in ci-deps-1 asset) + an empty
-# RomFS dir: proves split+chain interop on the runner. Full RomFS split needs the
-# encrypted-RomFS decision (morning item). No keys, no RomFS bytes, no extracts
-# in git. Profile is copied into the clone dm/games/ because both patch_nso and
-# dmsh_chain.load_game() read it from there, not from DM_GAMES_DIR.
-# (re-registration touch: previous push registered without workflow_dispatch)
-
 on:
   push:
     branches: [rinato-native-m0]
     paths:
-      - "docs/evidence/rinato-profile/**"
       - ".github/workflows/macos-shaders.yml"
   workflow_dispatch:
 
 permissions:
   contents: read
 
-concurrency:
-  group: macos-shaders-${{ github.ref }}
-  cancel-in-progress: true
-
 jobs:
-  shaders:
-    name: split + dmsh_build on macOS
+  probe:
+    name: minimal probe
     runs-on: macos-15
-    timeout-minutes: 60
-    env:
-      DM_GAMES_DIR: ${{ github.workspace }}/docs/evidence
-      DM_GAME: rinato-profile
-
+    timeout-minutes: 10
     steps:
       - name: Check out sources
         uses: actions/checkout@v4
-
-      - name: Shallow-clone upstream toolchain
-        run: git clone --depth 1 https://github.com/seedds/nxnative.git /tmp/nxnative
-
-      - name: Install deps (venv, runner python is PEP-668 managed)
-        run: |
-          set -euo pipefail
-          python3 -m venv /tmp/nxvenv
-          /tmp/nxvenv/bin/pip install lz4 "capstone==5.*"
-
-      - name: Download encrypted ExeFS
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          set -euo pipefail
-          mkdir -p /tmp/nso
-          gh release download ci-deps-1 --repo "${{ github.repository }}" --pattern "*.enc" --dir /tmp/nso
-
-      - name: Decrypt ExeFS (key from secret, shredded after use)
-        run: |
-          set -euo pipefail
-          echo "${{ secrets.NSO_BUNDLE_KEY }}" > /tmp/nso/key.txt
-          openssl enc -d -aes-256-cbc -salt -pbkdf2 -in /tmp/nso/rinato-exefs-101.enc -out /tmp/nso/exefs.tar -pass file:/tmp/nso/key.txt
-          tar -xf /tmp/nso/exefs.tar -C /tmp/nso
-          shred -u /tmp/nso/key.txt || rm -f /tmp/nso/key.txt
-          ls -l /tmp/nso/exefs/main
-
-      - name: Stage profile into clone (loaders read dm/games/, not DM_GAMES_DIR)
-        run: |
-          set -euo pipefail
-          cp -r "${{ github.workspace }}/docs/evidence/rinato-profile" /tmp/nxnative/dm/games/rinato-profile
-          ls /tmp/nxnative/dm/games/rinato-profile/
-
-      - name: Split shaders from main (empty RomFS: main-only subset)
-        run: |
-          set -euo pipefail
-          mkdir -p /tmp/romfs-empty /tmp/split
-          /tmp/nxvenv/bin/python /tmp/nxnative/dm/gfx/tools/shader_split.py /tmp/romfs-empty /tmp/nso/exefs/main rinato /tmp/split/map.tsv /tmp/split/facts.tsv /tmp/split/pairs.tsv /tmp/split/pso_pairs.tsv
-
-      - name: Verify split outputs
-        run: |
-          set -euo pipefail
-          ls -lR /tmp/split | head -25
-          wc -l /tmp/split/map.tsv /tmp/split/facts.tsv
-
-      - name: dmsh_build Mac libraries
-        run: |
-          set -euo pipefail
-          mkdir -p /tmp/shader-out
-          /tmp/nxvenv/bin/python /tmp/nxnative/dm/gfx/tools/dmsh_build.py /tmp/split /tmp/shader-out
-
-      - name: Verify shader libraries
-        run: |
-          set -euo pipefail
-          ls -lR /tmp/shader-out | head -25
+      - name: Echo
+        run: echo shader-workflow-registration-probe
 

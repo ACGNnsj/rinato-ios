@@ -33,6 +33,11 @@ class TestRinatoNsoLoad(unittest.TestCase):
         out = json.loads(run_tool().stdout)
         unresolved = set(out['binding']['unresolved'])
         self.assertLessEqual(unresolved, ALLOW_UNRESOLVED, sorted(unresolved)[:10])
+    def test_link_map_resolves(self):
+        out = json.loads(run_tool().stdout)
+        link = out['link']
+        self.assertEqual(link['deferred'], link['resolved'] + link['unresolved_count'])
+        self.assertLessEqual(set(link['unresolved']), ALLOW_UNRESOLVED, sorted(link['unresolved'])[:10])
     def test_deterministic(self):
         self.assertEqual(run_tool().stdout, run_tool().stdout)
 

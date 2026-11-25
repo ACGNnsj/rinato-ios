@@ -36,8 +36,11 @@ jobs:
       - name: Shallow-clone upstream toolchain
         run: git clone --depth 1 https://github.com/seedds/nxnative.git /tmp/nxnative
 
-      - name: Install rewrite deps
-        run: pip3 install lz4 "capstone==5.*"
+      - name: Install rewrite deps (venv, runner python is PEP-668 managed)
+        run: |
+          set -euo pipefail
+          python3 -m venv /tmp/nxvenv
+          /tmp/nxvenv/bin/pip install lz4 "capstone==5.*"
 
       - name: Download encrypted ExeFS
         env:
@@ -61,7 +64,7 @@ jobs:
           set -euo pipefail
           mkdir -p /tmp/rewritten
           for m in main subsdk0 sdk; do
-            python3 /tmp/nxnative/dm/tools/patch_nso.py "/tmp/nso/exefs/$m" /tmp/rewritten "$m"
+            /tmp/nxvenv/bin/python /tmp/nxnative/dm/tools/patch_nso.py "/tmp/nso/exefs/$m" /tmp/rewritten "$m"
           done
 
       - name: Verify outputs

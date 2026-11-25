@@ -23,6 +23,7 @@ def main():
     names = ['main', 'subsdk0', 'sdk']
     mods = {}
     exports = {}
+    export_counts = {}
     nsos = {}
     for name in names:
         n, img, applied, deferred, kinds = load_module(os.path.join(d, name))
@@ -34,12 +35,23 @@ def main():
             'nimports': len(n.imports()), 'nexports': len(n.exports())}
         nsos[name] = n
         for s in n.exports():
+            export_counts[s[0]] = export_counts.get(s[0], 0) + 1
             exports.setdefault(s[0], (name, s[3]))
     all_imports = set()
     for name in names:
         n = Nso(os.path.join(d, name))
         all_imports.update(i[0] for i in n.imports())
+    collisions = sorted(k for k, v in export_counts.items() if v > 1)
     unresolved = sorted(all_imports - set(k for k in exports))
+    module_dupes = {}
+    for name in names:
+        seen_here = set()
+        d = 0
+        for s in nsos[name].exports():
+            if s[0] in seen_here:
+                d += 1
+            seen_here.add(s[0])
+        module_dupes[name] = d
     link_resolved = link_unresolved = 0
     link_missing = set()
     for name in names:
@@ -55,7 +67,7 @@ def main():
     link = {'deferred': sum(m['relocs_deferred'] for m in mods.values()),
         'resolved': link_resolved, 'unresolved_count': link_unresolved,
         'unresolved': sorted(link_missing)}
-    print(json.dumps({'modules': mods, 'binding': {'unresolved': unresolved}, 'link': link}, indent=1))
+    print(json.dumps({'modules': mods, 'binding': {'unresolved': unresolved, 'collisions': collisions, 'module_dupes': module_dupes}, 'link': link}, indent=1))
 
 if __name__ == '__main__':
     main()

@@ -38,6 +38,12 @@ class TestRinatoNsoLoad(unittest.TestCase):
         link = out['link']
         self.assertEqual(link['deferred'], link['resolved'] + link['unresolved_count'])
         self.assertLessEqual(set(link['unresolved']), ALLOW_UNRESOLVED, sorted(link['unresolved'])[:10])
+    def test_no_export_collisions(self):
+        # 122 cross-module collisions are real and benign (shared static runtime in sdk/subsdk0,
+        # C++ RTTI in main; loader resolves by module load order). This asserts the real invariant:
+        # no module exports the same name twice.
+        out = json.loads(run_tool().stdout)
+        self.assertEqual(out['binding']['module_dupes'], {'main': 0, 'subsdk0': 0, 'sdk': 0})
     def test_deterministic(self):
         self.assertEqual(run_tool().stdout, run_tool().stdout)
 

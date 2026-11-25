@@ -1,0 +1,71 @@
+name: macos-rewrite
+
+# Runs the offline NSO rewrite (patch_nso) for Rinato 1.0.1 on a GitHub-hosted
+# macOS runner. Game bytes arrive as an AES-256-CBC encrypted release asset
+# (ci-deps-1); the runner decrypts with repo secret NSO_BUNDLE_KEY and never
+# commits plaintext. No keys, no RomFS, no extracts in git.
+
+on:
+  push:
+    branches: [rinato-native-m0]
+    paths:
+      - "docs/evidence/rinato-profile/**"
+      - ".github/workflows/macos-rewrite.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: macos-rewrite-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  rewrite:
+    name: patch_nso on macOS
+    runs-on: macos-15
+    timeout-minutes: 30
+    env:
+      DM_GAMES_DIR: ${{ github.workspace }}/docs/evidence
+      DM_GAME: rinato-profile
+
+    steps:
+      - name: Check out sources
+        uses: actions/checkout@v4
+
+      - name: Shallow-clone upstream toolchain
+        run: git clone --depth 1 https://github.com/seedds/nxnative.git /tmp/nxnative
+
+      - name: Install rewrite deps
+        run: pip3 install lz4 "capstone==5.*"
+
+      - name: Download encrypted ExeFS
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/nso
+          gh release download ci-deps-1 --repo "${{ github.repository }}" --pattern "*.enc" --dir /tmp/nso
+
+      - name: Decrypt ExeFS (key from secret, shredded after use)
+        run: |
+          set -euo pipefail
+          echo "${{ secrets.NSO_BUNDLE_KEY }}" > /tmp/nso/key.txt
+          openssl enc -d -aes-256-cbc -salt -pbkdf2 -in /tmp/nso/rinato-exefs-101.enc -out /tmp/nso/exefs.tar -pass file:/tmp/nso/key.txt
+          tar -xf /tmp/nso/exefs.tar -C /tmp/nso
+          shred -u /tmp/nso/key.txt || rm -f /tmp/nso/key.txt
+          ls -l /tmp/nso/exefs/
+
+      - name: Rewrite modules
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/rewritten
+          for m in main subsdk0 sdk; do
+            python3 /tmp/nxnative/dm/tools/patch_nso.py "/tmp/nso/exefs/$m" /tmp/rewritten "$m"
+          done
+
+      - name: Verify outputs
+        run: |
+          set -euo pipefail
+          ls -lR /tmp/rewritten | head -20
+

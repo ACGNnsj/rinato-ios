@@ -159,11 +159,11 @@ index f20117d..73f0ffd 100644
      romfs_id want, got;
 diff --git a/dm/gfx/tex/nvn_bcdec.c b/dm/gfx/tex/nvn_bcdec.c
 new file mode 100644
-index e69de29..10dbc82 100644
+index e69de29..6fa42d8 100644
 --- /dev/null
 +++ b/dm/gfx/tex/nvn_bcdec.c
 @@ -0,0 +1,57 @@
-+<html><head><meta name="color-scheme" content="light dark"></head><body><pre style="word-wrap: break-word; white-space: pre-wrap;">// See nvn_bcdec.h. Decoding uses bcdec (dm/third_party/bcdec, single header, MIT / public domain).
++// See nvn_bcdec.h. Decoding uses bcdec (dm/third_party/bcdec, single header, MIT / public domain).
 +#define BCDEC_IMPLEMENTATION
 +#define BCDEC_BC4BC5_PRECISE   // interface with signed variants of BC4 / BC5
 +#include "../../third_party/bcdec/bcdec.h"
@@ -219,14 +219,14 @@ index e69de29..10dbc82 100644
 +    }
 +    return 0;
 +}
-+</pre></body></html>
++
 diff --git a/dm/gfx/tex/nvn_bcdec.h b/dm/gfx/tex/nvn_bcdec.h
 new file mode 100644
-index e69de29..2428583 100644
+index e69de29..e33c762 100644
 --- /dev/null
 +++ b/dm/gfx/tex/nvn_bcdec.h
 @@ -0,0 +1,11 @@
-+<html><head><meta name="color-scheme" content="light dark"></head><body><pre style="word-wrap: break-word; white-space: pre-wrap;">// GPUs without BC compressed format support (A15 / A16 etc., Apple GPU family Apple8 and below): BC textures are decompressed on the CPU into uncompressed formats.
++// GPUs without BC compressed format support (A15 / A16 etc., Apple GPU family Apple8 and below): BC textures are decompressed on the CPU into uncompressed formats.
 +// On a GPU without BC every BC texture is stored decompressed; BC1-5 are decoded on the GPU at upload (nvn_mtl.m, bcd), BC6H / BC7 / 3D textures go through here (d2r-mobile's offline ASTC pack is not part of this repository).
 +#pragma once
 +#include <stddef.h>
@@ -236,7 +236,7 @@ index e69de29..2428583 100644
 +int nvn_bc_unpacked(uint32_t nvn_fmt, uint32_t *mtl_pf, int *bpp);
 +// Decode a w×h pixel region: src is laid out by block rows (pitch bytes per block row), dst has dpitch bytes per pixel row. Returns 0 on success
 +int nvn_bc_decode(uint32_t nvn_fmt, const uint8_t *src, size_t pitch, uint32_t w, uint32_t h, uint8_t *dst, size_t dpitch);
-+</pre></body></html>
++
 diff --git a/dm/third_party/bcdec/bcdec.h b/dm/third_party/bcdec/bcdec.h
 new file mode 100644
 index e69de29..553c3ec 100644

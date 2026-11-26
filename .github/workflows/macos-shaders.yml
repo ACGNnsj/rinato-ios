@@ -68,6 +68,17 @@ jobs:
           mkdir -p /tmp/romfs-empty /tmp/split
           /tmp/nxvenv/bin/python /tmp/nxnative/dm/gfx/tools/shader_split.py /tmp/romfs-empty /tmp/nso/exefs/main rinato /tmp/split/map.tsv /tmp/split/facts.tsv /tmp/split/pairs.tsv /tmp/split/pso_pairs.tsv
 
+      - name: Stage the main-only tables for dmsh_build
+        run: |
+          set -euo pipefail
+          profile=/tmp/nxnative/dm/games/rinato-profile
+          cp /tmp/split/map.tsv "$profile/shader_map.tsv"
+          cp /tmp/split/facts.tsv "$profile/shader_facts.tsv"
+          cp /tmp/split/pairs.tsv "$profile/shader_pairs.tsv"
+          cp /tmp/split/pso_pairs.tsv "$profile/pso_pairs.tsv"
+          cp /tmp/split/geo_pairs.tsv "$profile/geo_pairs.tsv"
+          cp /tmp/split/mesh_pairs.tsv "$profile/mesh_pairs.tsv"
+
       - name: Verify split outputs
         run: |
           set -euo pipefail

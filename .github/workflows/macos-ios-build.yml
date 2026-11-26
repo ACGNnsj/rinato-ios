@@ -1,0 +1,64 @@
+name: macos-ios-build
+
+# iOS host compile check + production project build with synthetic modules.
+# No game files, keys, shaders, signing or device needed: proves the host
+# sources and the Xcode project build for the iPhone SDK on the locked
+# toolchain (Xcode 27.2, Metal 32023.922).
+
+on:
+  push:
+    branches: [rinato-native-m0]
+    paths:
+      - "docs/evidence/rinato-profile/**"
+      - ".github/workflows/macos-ios-build.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: macos-ios-build-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  ios-build:
+    name: iOS host compile and smoke build
+    runs-on: xcode-27
+    timeout-minutes: 40
+    env:
+      DEVELOPER_DIR: /Applications/Xcode_27.2.app/Contents/Developer
+      DM_GAME: rinato-profile
+
+    steps:
+      - name: Check out sources
+        uses: actions/checkout@v4
+
+      - name: Shallow-clone upstream toolchain
+        run: git clone --depth 1 https://github.com/seedds/nxnative.git /tmp/nxnative
+
+      - name: Stage profile into clone (loaders read dm/games, not DM_GAMES_DIR)
+        run: |
+          set -euo pipefail
+          cp -r "${{ github.workspace }}/docs/evidence/rinato-profile" /tmp/nxnative/dm/games/rinato-profile
+          ls /tmp/nxnative/dm/games/rinato-profile/
+
+      - name: Install the selected Xcode Metal toolchain
+        run: |
+          set -euo pipefail
+          xcodebuild -downloadComponent MetalToolchain
+          xcodebuild -version
+          python3 /tmp/nxnative/dm/gfx/tools/own_compilers.py --check-metal
+
+      - name: Install XcodeGen
+        run: command -v xcodegen || brew install xcodegen
+
+      - name: iOS host sources compiled for the iPhone SDK
+        run: |
+          set -euo pipefail
+          cd /tmp/nxnative
+          python3 dm/ios/tools/compile_check.py
+
+      - name: Build the production iOS project with synthetic inputs
+        run: |
+          set -euo pipefail
+          python3 /tmp/nxnative/dm/ios/tools/build_smoke.py --output "$RUNNER_TEMP/ios-smoke"

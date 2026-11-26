@@ -15,3 +15,11 @@ Chain model (upstream AGENTS.md + dmsh_chain.py + test_mac_metal.py):
 ## Still Mac-side
 
 - Run steps 1-3 above; confirm shader_versions 1.0.1 at build; heap check for the 5GB virtual-address layout on the Mac.
+
+## CI-proven on GitHub runners (macos-shaders.yml, run 45748669483 green)
+
+- Runner must be `xcode-27` with `DEVELOPER_DIR=/Applications/Xcode_27.2.app/Contents/Developer` plus `xcodebuild -downloadComponent MetalToolchain`; `macos-15` image ships metal 32023.620 but the lock wants 32023.922. Verify with `own_compilers.py --check-metal` before building.
+- Copy the game profile into the clone (`dm/games/rinato-profile`): both `patch_nso` and `dmsh_chain.load_game()` read it from there, not from `DM_GAMES_DIR`.
+- Komma-separated `shader_split.py` args are `(roms, mains, pkg-dir, map, facts, pairs, pso-pairs)`: the third arg is the shader **package directory** (receives `cs/ps/vs_main.bin`), NOT a label. `dmsh_build.py` takes that package dir as `<Switch package dir>`, not the tables dir.
+- Main-only split (empty RomFS dir) yields a real subset: 11 shaders (V3/P7/C1), `cs/ps/vs_main.bin` packages, 14-line map / 2-line facts. Full 786-shader set needs the encrypted-RomFS decision.
+- `dmsh_build.py` result on the subset: `shaders 11: ok 11`, Metal cache mac 11 compiled, side/pull libraries generated, 0 failures. Workflow step names must not contain an unquoted `: ` (YAML plain-scalar colon breaks registration: 0 jobs, 0s failure, run not retryable).

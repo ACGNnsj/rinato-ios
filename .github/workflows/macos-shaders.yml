@@ -20,9 +20,10 @@ concurrency:
 jobs:
   shaders:
     name: split + dmsh_build on macOS
-    runs-on: macos-15
+    runs-on: xcode-27
     timeout-minutes: 60
     env:
+      DEVELOPER_DIR: /Applications/Xcode_27.2.app/Contents/Developer
       DM_GAMES_DIR: ${{ github.workspace }}/docs/evidence
       DM_GAME: rinato-profile
 
@@ -72,6 +73,14 @@ jobs:
           set -euo pipefail
           ls -lR /tmp/split | head -25
           wc -l /tmp/split/map.tsv /tmp/split/facts.tsv
+
+      - name: Install and verify the locked Metal toolchain
+        run: |
+          set -euo pipefail
+          xcodebuild -downloadComponent MetalToolchain
+          xcodebuild -version
+          xcrun metal --version
+          python3 /tmp/nxnative/dm/gfx/tools/own_compilers.py --check-metal
 
       - name: dmsh_build Mac libraries
         run: |

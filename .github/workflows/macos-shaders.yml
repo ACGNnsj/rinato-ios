@@ -46,7 +46,7 @@ jobs:
           set -euo pipefail
           mkdir -p /tmp/nso
           gh release download ci-deps-1 --repo "${{ github.repository }}" --pattern "rinato-exefs-101.enc" --dir /tmp/nso
-          gh release download ci-deps-1 --repo "${{ github.repository }}" --pattern "rinato-romfs-101.tar.*.enc" --dir /tmp/romfs
+          gh release download ci-deps-1 --repo "${{ github.repository }}" --pattern "rinato-romfs-101.tar.enc.*" --dir /tmp/romfs
 
       - name: Decrypt ExeFS (key from secret, shredded after use)
         run: |
@@ -61,7 +61,7 @@ jobs:
         run: |
           set -euo pipefail
           echo "${{ secrets.ROMFS_BUNDLE_KEY }}" > /tmp/romfs/key.txt
-          cat /tmp/romfs/rinato-romfs-101.tar.*.enc > /tmp/romfs/romfs.tar.enc
+          cat /tmp/romfs/rinato-romfs-101.tar.enc.aa /tmp/romfs/rinato-romfs-101.tar.enc.ab > /tmp/romfs/romfs.tar.enc
           openssl enc -d -aes-256-cbc -salt -pbkdf2 -in /tmp/romfs/romfs.tar.enc -out /tmp/romfs/romfs.tar -pass file:/tmp/romfs/key.txt
           mkdir -p /tmp/romfs101 && tar -xf /tmp/romfs/romfs.tar -C /tmp/romfs101
           shred -u /tmp/romfs/key.txt || rm -f /tmp/romfs/key.txt

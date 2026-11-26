@@ -110,7 +110,19 @@ jobs:
           cd /tmp/nxnative
           /tmp/nxvenv/bin/python scripts/build_ipa_from_nsp.py /tmp/dump --work-dir /tmp/rinato-build
 
-      - name: List pack outputs
+      - name: Report and split the IPA for upload
         run: |
           set -euo pipefail
-          ls -lR /tmp/rinato-build/ipa | head -20
+          ipa=/tmp/ArcanaFamigliaRinato.ipa
+          stat -f "IPA bytes: %z" "$ipa"
+          mkdir -p /tmp/ipa-parts
+          split -b 1500m "$ipa" /tmp/ipa-parts/ArcanaFamigliaRinato.ipa.
+          shasum -a 256 "$ipa" | tee /tmp/ipa-parts/SHA256SUMS.txt
+          ls -l /tmp/ipa-parts
+
+      - name: Upload IPA parts to ci-deps-1
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          gh release upload ci-deps-1 /tmp/ipa-parts/* --repo "${{ github.repository }}" --clobber

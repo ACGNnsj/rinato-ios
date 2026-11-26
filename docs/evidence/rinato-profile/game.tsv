@@ -4,6 +4,7 @@ title_id	010008702297A000
 program_id	010008702297A000
 name	Arcana Famiglia Rinato
 app_category	public.app-category.adventure-games
+ipa	ArcanaFamigliaRinato.ipa
 modules	main subsdk0 sdk
 mem_reserve	0x140000000
 mem_alias	0x118000000

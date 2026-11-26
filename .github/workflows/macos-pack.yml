@@ -11,6 +11,7 @@ on:
     branches: [rinato-native-m0]
     paths:
       - ".github/workflows/macos-pack.yml"
+      - "docs/evidence/rinato-profile/**"
   workflow_dispatch:
 
 permissions:

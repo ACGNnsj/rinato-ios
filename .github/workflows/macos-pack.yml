@@ -11,6 +11,7 @@ on:
     branches: [rinato-native-m0]
     paths:
       - ".github/workflows/macos-pack.yml"
+      - "patches/a13-cpu-bcdec.patch"
       - "docs/evidence/rinato-profile/**"
   workflow_dispatch:
 
@@ -34,8 +35,15 @@ jobs:
       - name: Check out sources
         uses: actions/checkout@v4
 
-      - name: Shallow-clone upstream toolchain
-        run: git clone --depth 1 https://github.com/seedds/nxnative.git /tmp/nxnative
+      - name: Checkout pinned upstream and apply A13 CPU BC decoder
+        run: |
+          set -euo pipefail
+          git init /tmp/nxnative
+          git -C /tmp/nxnative remote add origin https://github.com/seedds/nxnative.git
+          git -C /tmp/nxnative fetch --depth 1 origin 2f959ede5f1e08f10fe214e2e61933a051bdd515
+          git -C /tmp/nxnative checkout --detach FETCH_HEAD
+          git -C /tmp/nxnative apply --check "$GITHUB_WORKSPACE/patches/a13-cpu-bcdec.patch"
+          git -C /tmp/nxnative apply "$GITHUB_WORKSPACE/patches/a13-cpu-bcdec.patch"
 
       - name: Stage profile into clone (loaders read dm/games, not DM_GAMES_DIR)
         run: |

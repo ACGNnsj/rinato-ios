@@ -1,0 +1,94 @@
+name: macos-pack
+
+# True pack from the update-only dump (no NSPs, no prod.keys on CI).
+# Stages updates/65537/{exefs,romfs} from the two encrypted bundles, then runs
+# the authoritative scripts/build_ipa_from_nsp.py end to end
+# (survey-match by build ID -> rewrite -> split -> Mac+iOS shaders -> embed ->
+# unsigned IPA). NOT pushed: drafted locally, awaiting user go-ahead.
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: macos-pack-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  pack:
+    name: dump to unsigned IPA
+    runs-on: xcode-27
+    timeout-minutes: 180
+    env:
+      DEVELOPER_DIR: /Applications/Xcode_27.2.app/Contents/Developer
+      DM_GAME: rinato-profile
+
+    steps:
+      - name: Check out sources
+        uses: actions/checkout@v4
+
+      - name: Shallow-clone upstream toolchain
+        run: git clone --depth 1 https://github.com/seedds/nxnative.git /tmp/nxnative
+
+      - name: Stage profile into clone (loaders read dm/games, not DM_GAMES_DIR)
+        run: |
+          set -euo pipefail
+          cp -r "${{ github.workspace }}/docs/evidence/rinato-profile" /tmp/nxnative/dm/games/rinato-profile
+
+      - name: Install the selected Xcode Metal toolchain
+        run: |
+          set -euo pipefail
+          xcodebuild -downloadComponent MetalToolchain
+          xcodebuild -version
+          python3 /tmp/nxnative/dm/gfx/tools/own_compilers.py --check-metal
+
+      - name: Install XcodeGen, zstd and python deps
+        run: |
+          set -euo pipefail
+          command -v xcodegen || brew install xcodegen
+          command -v zstd || brew install zstd
+          python3 -m venv /tmp/nxvenv
+          /tmp/nxvenv/bin/pip install lz4 "capstone==5.*" fonttools zbic
+
+      - name: Download encrypted game bundles
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/nso /tmp/romfs
+          gh release download ci-deps-1 --repo "${{ github.repository }}" --pattern "rinato-exefs-101.enc" --dir /tmp/nso
+          gh release download ci-deps-1 --repo "${{ github.repository }}" --pattern "rinato-romfs-101.tar.enc.*" --dir /tmp/romfs
+
+      - name: Decrypt bundles (keys from secrets, shredded after use)
+        run: |
+          set -euo pipefail
+          echo "${{ secrets.NSO_BUNDLE_KEY }}" > /tmp/nso/key.txt
+          openssl enc -d -aes-256-cbc -salt -pbkdf2 -in /tmp/nso/rinato-exefs-101.enc -out /tmp/nso/exefs.tar -pass file:/tmp/nso/key.txt
+          tar -xf /tmp/nso/exefs.tar -C /tmp/nso
+          shred -u /tmp/nso/key.txt || rm -f /tmp/nso/key.txt
+          echo "${{ secrets.ROMFS_BUNDLE_KEY }}" > /tmp/romfs/key.txt
+          cat /tmp/romfs/rinato-romfs-101.tar.enc.aa /tmp/romfs/rinato-romfs-101.tar.enc.ab > /tmp/romfs/romfs.tar.enc
+          openssl enc -d -aes-256-cbc -salt -pbkdf2 -in /tmp/romfs/romfs.tar.enc -out /tmp/romfs/romfs.tar -pass file:/tmp/romfs/key.txt
+          mkdir -p /tmp/romfs101 && tar -xf /tmp/romfs/romfs.tar -C /tmp/romfs101
+          shred -u /tmp/romfs/key.txt || rm -f /tmp/romfs/key.txt
+
+      - name: Stage update-only dump (version 65537 is 1.0.1)
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/dump/updates/65537
+          mv /tmp/nso/exefs /tmp/dump/updates/65537/exefs
+          mv /tmp/romfs101/RomFS /tmp/dump/updates/65537/romfs
+          ls /tmp/dump/updates/65537 /tmp/dump/updates/65537/exefs
+
+      - name: Pack unsigned IPA from dump
+        run: |
+          set -euo pipefail
+          cd /tmp/nxnative
+          /tmp/nxvenv/bin/python scripts/build_ipa_from_nsp.py /tmp/dump --work-dir /tmp/rinato-build
+
+      - name: List pack outputs
+        run: |
+          set -euo pipefail
+          ls -lR /tmp/rinato-build/ipa | head -20

@@ -104,3 +104,16 @@ jobs:
           set -euo pipefail
           ls -lR /tmp/shader-out | head -25
 
+      - name: dmsh_build iOS libraries (iphoneos metallib)
+        env:
+          IOSOUT: /tmp/shader-ios
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/shader-ios
+          /tmp/nxvenv/bin/python /tmp/nxnative/dm/gfx/tools/dmsh_build.py /tmp/split/pkg /tmp/shader-out
+
+      - name: Verify iOS libraries
+        run: |
+          set -euo pipefail
+          ls -lR /tmp/shader-ios | head -30
+

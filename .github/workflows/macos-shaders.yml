@@ -45,7 +45,8 @@ jobs:
         run: |
           set -euo pipefail
           mkdir -p /tmp/nso
-          gh release download ci-deps-1 --repo "${{ github.repository }}" --pattern "*.enc" --dir /tmp/nso
+          gh release download ci-deps-1 --repo "${{ github.repository }}" --pattern "rinato-exefs-101.enc" --dir /tmp/nso
+          gh release download ci-deps-1 --repo "${{ github.repository }}" --pattern "rinato-romfs-101.tar.*.enc" --dir /tmp/romfs
 
       - name: Decrypt ExeFS (key from secret, shredded after use)
         run: |
@@ -56,6 +57,16 @@ jobs:
           shred -u /tmp/nso/key.txt || rm -f /tmp/nso/key.txt
           ls -l /tmp/nso/exefs/main
 
+      - name: Decrypt RomFS (key from secret, shredded after use)
+        run: |
+          set -euo pipefail
+          echo "${{ secrets.ROMFS_BUNDLE_KEY }}" > /tmp/romfs/key.txt
+          cat /tmp/romfs/rinato-romfs-101.tar.*.enc > /tmp/romfs/romfs.tar.enc
+          openssl enc -d -aes-256-cbc -salt -pbkdf2 -in /tmp/romfs/romfs.tar.enc -out /tmp/romfs/romfs.tar -pass file:/tmp/romfs/key.txt
+          mkdir -p /tmp/romfs101 && tar -xf /tmp/romfs/romfs.tar -C /tmp/romfs101
+          shred -u /tmp/romfs/key.txt || rm -f /tmp/romfs/key.txt
+          ls /tmp/romfs101/RomFS | head -5
+
       - name: Stage profile into clone (loaders read dm/games, not DM_GAMES_DIR)
         run: |
           set -euo pipefail
@@ -65,8 +76,8 @@ jobs:
       - name: "Split shaders from main (empty RomFS: main-only subset)"
         run: |
           set -euo pipefail
-          mkdir -p /tmp/romfs-empty /tmp/split/pkg /tmp/split/tables
-          /tmp/nxvenv/bin/python /tmp/nxnative/dm/gfx/tools/shader_split.py /tmp/romfs-empty /tmp/nso/exefs/main /tmp/split/pkg /tmp/split/tables/map.tsv /tmp/split/tables/facts.tsv /tmp/split/tables/pairs.tsv /tmp/split/tables/pso_pairs.tsv
+          mkdir -p /tmp/split/pkg /tmp/split/tables
+          /tmp/nxvenv/bin/python /tmp/nxnative/dm/gfx/tools/shader_split.py /tmp/romfs101/RomFS /tmp/nso/exefs/main /tmp/split/pkg /tmp/split/tables/map.tsv /tmp/split/tables/facts.tsv /tmp/split/tables/pairs.tsv /tmp/split/tables/pso_pairs.tsv
 
       - name: Stage the main-only tables for dmsh_build
         run: |

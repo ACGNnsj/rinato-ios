@@ -65,25 +65,25 @@ jobs:
       - name: "Split shaders from main (empty RomFS: main-only subset)"
         run: |
           set -euo pipefail
-          mkdir -p /tmp/romfs-empty /tmp/split
-          /tmp/nxvenv/bin/python /tmp/nxnative/dm/gfx/tools/shader_split.py /tmp/romfs-empty /tmp/nso/exefs/main rinato /tmp/split/map.tsv /tmp/split/facts.tsv /tmp/split/pairs.tsv /tmp/split/pso_pairs.tsv
+          mkdir -p /tmp/romfs-empty /tmp/split/pkg /tmp/split/tables
+          /tmp/nxvenv/bin/python /tmp/nxnative/dm/gfx/tools/shader_split.py /tmp/romfs-empty /tmp/nso/exefs/main /tmp/split/pkg /tmp/split/tables/map.tsv /tmp/split/tables/facts.tsv /tmp/split/tables/pairs.tsv /tmp/split/tables/pso_pairs.tsv
 
       - name: Stage the main-only tables for dmsh_build
         run: |
           set -euo pipefail
           profile=/tmp/nxnative/dm/games/rinato-profile
-          cp /tmp/split/map.tsv "$profile/shader_map.tsv"
-          cp /tmp/split/facts.tsv "$profile/shader_facts.tsv"
-          cp /tmp/split/pairs.tsv "$profile/shader_pairs.tsv"
-          cp /tmp/split/pso_pairs.tsv "$profile/pso_pairs.tsv"
-          cp /tmp/split/geo_pairs.tsv "$profile/geo_pairs.tsv"
-          cp /tmp/split/mesh_pairs.tsv "$profile/mesh_pairs.tsv"
+          cp /tmp/split/tables/map.tsv "$profile/shader_map.tsv"
+          cp /tmp/split/tables/facts.tsv "$profile/shader_facts.tsv"
+          cp /tmp/split/tables/pairs.tsv "$profile/shader_pairs.tsv"
+          cp /tmp/split/tables/pso_pairs.tsv "$profile/pso_pairs.tsv"
+          cp /tmp/split/tables/geo_pairs.tsv "$profile/geo_pairs.tsv"
+          cp /tmp/split/tables/mesh_pairs.tsv "$profile/mesh_pairs.tsv"
 
       - name: Verify split outputs
         run: |
           set -euo pipefail
           ls -lR /tmp/split | head -25
-          wc -l /tmp/split/map.tsv /tmp/split/facts.tsv
+          wc -l /tmp/split/tables/map.tsv /tmp/split/tables/facts.tsv
 
       - name: Install and verify the locked Metal toolchain
         run: |
@@ -97,7 +97,7 @@ jobs:
         run: |
           set -euo pipefail
           mkdir -p /tmp/shader-out
-          /tmp/nxvenv/bin/python /tmp/nxnative/dm/gfx/tools/dmsh_build.py /tmp/split /tmp/shader-out
+          /tmp/nxvenv/bin/python /tmp/nxnative/dm/gfx/tools/dmsh_build.py /tmp/split/pkg /tmp/shader-out
 
       - name: Verify shader libraries
         run: |

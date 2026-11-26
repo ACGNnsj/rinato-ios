@@ -7,6 +7,10 @@ name: macos-pack
 # unsigned IPA). NOT pushed: drafted locally, awaiting user go-ahead.
 
 on:
+  push:
+    branches: [rinato-native-m0]
+    paths:
+      - ".github/workflows/macos-pack.yml"
   workflow_dispatch:
 
 permissions:

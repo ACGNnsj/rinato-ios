@@ -54,6 +54,7 @@ jobs:
           set -euo pipefail
           command -v xcodegen || brew install xcodegen
           command -v zstd || brew install zstd
+          command -v glslangValidator || brew install glslang
           python3 -m venv /tmp/nxvenv
           /tmp/nxvenv/bin/pip install lz4 "capstone==5.*" fonttools zbic
 

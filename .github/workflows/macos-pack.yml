@@ -88,6 +88,22 @@ jobs:
           mv /tmp/romfs101/RomFS /tmp/dump/updates/65537/romfs
           ls /tmp/dump/updates/65537 /tmp/dump/updates/65537/exefs
 
+      - name: Regenerate shader tables on this host (path/package names are host-specific)
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/split/pkg /tmp/split/tables
+          /tmp/nxvenv/bin/python /tmp/nxnative/dm/gfx/tools/shader_split.py \
+            /tmp/dump/updates/65537/romfs /tmp/dump/updates/65537/exefs/main \
+            /tmp/split/pkg /tmp/split/tables/map.tsv /tmp/split/tables/facts.tsv \
+            /tmp/split/tables/pairs.tsv /tmp/split/tables/pso_pairs.tsv
+          profile=/tmp/nxnative/dm/games/rinato-profile
+          cp /tmp/split/tables/map.tsv "$profile/shader_map.tsv"
+          cp /tmp/split/tables/facts.tsv "$profile/shader_facts.tsv"
+          cp /tmp/split/tables/pairs.tsv "$profile/shader_pairs.tsv"
+          cp /tmp/split/tables/pso_pairs.tsv "$profile/pso_pairs.tsv"
+          cp /tmp/split/tables/geo_pairs.tsv "$profile/geo_pairs.tsv"
+          cp /tmp/split/tables/mesh_pairs.tsv "$profile/mesh_pairs.tsv"
+
       - name: Pack unsigned IPA from dump
         run: |
           set -euo pipefail

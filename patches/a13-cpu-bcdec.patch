@@ -152,7 +152,7 @@ index f20117d..59e5688 100644
 -    return msg;
 +    id<MTLDevice> gpu = MTLCreateSystemDefaultDevice();
 +    if (!gpu) return "This device has no Metal device.";
-+    if (!gpu.supportsBCTextureCompression) MLOG("device GPU %s has no BC texture formats: using CPU BC decompression", gpu.name.UTF8String);
++    if (!gpu.supportsBCTextureCompression) fprintf(stderr, "device GPU %s has no BC texture formats: using CPU BC decompression\n", gpu.name.UTF8String);
 +    return NULL;
  }
  static void romfs_identity_report(NSString *doc) {

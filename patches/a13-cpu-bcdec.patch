@@ -1,5 +1,5 @@
 diff --git a/dm/gfx/nvn/nvn_mtl.m b/dm/gfx/nvn/nvn_mtl.m
-index 0f8c448..269ae26 100644
+index 0f8c448..85f03c1 100644
 --- a/dm/gfx/nvn/nvn_mtl.m
 +++ b/dm/gfx/nvn/nvn_mtl.m
 @@ -31,6 +31,7 @@
@@ -508,7 +508,34 @@ index 0f8c448..269ae26 100644
      int ok = gpu_read_wait(WS_MDI);
      if (!ok) RED_ONCE(97, "indirect-count multi-draw: the GPU did not finish within 10 s; the count is read anyway");
      if (!g_mdi_waits++) MLOG("indirect-count multi-draw: first wait for the GPU-written count at frame %llu pass %llu", (unsigned long long)atomic_load(&g_cur_frame), g_stat_pass);
-@@ -19772,6 +19903,15 @@ static void copy_b2t(const p_copy_b2t *c, uint32_t size) {
+@@ -19733,9 +19864,12 @@ static size_t mtl_pf_block_bytes(MTLPixelFormat pf) {   // bytes per texel, or p
+     return mtl_pf_bytes(pf);
+ }
+ static void copy_b2t(const p_copy_b2t *c, uint32_t size) {
++    cl_note("copy_b2t enter");
+     id<MTLTexture> t = tex_mtl_all(c->tex); sparse_gpu_wrote(c->tex); tu_wrote(t);
+     if (!t) { PD("C ser=%llu (no host texture)", c->tex->serial); return; }
++    cl_note("copy_b2t tex");
+     tex_t pair; int paired = bcp_before(c->tex, t, &pair);   // a side of a compressed-alias pair: filled first, the copied region goes into its other side after
++    cl_note("copy_b2t pair");
+     int bw, bh, bpb = nvn_fmt_bpb(c->tex->d.format, &bw, &bh);
+     unsigned level = c->has_view && c->view.set_levels ? c->view.base_level : 0, layer0 = c->has_view && c->view.set_layers ? c->view.min_layer : 0;
+     if (!tex_level_ok(t, level, "buffer-to-texture copy")) return;
+@@ -19760,11 +19894,13 @@ static void copy_b2t(const p_copy_b2t *c, uint32_t size) {
+         if (!mtl_addr(c->src, img * nz, &mb, &mo)) { RED_ONCE(23, "buffer→texture copy source is in no memory pool"); return; }
+         sb = (__bridge id<MTLBuffer>)mb;
+     }
++    cl_note("copy_b2t arena");
+     g_cut_copy = 1;
+     if (is3d && passdump()) { const char *dd = getenv("DM_NVN_CBDUMP"); if (dd) {   // the source bytes of a 3D upload, beside the uniform dumps (F<frame>_c3d_<serial>.bin)
+         char p[1024]; snprintf(p, sizeof p, "%s/F%llu_c3d_%llu.bin", dd, (unsigned long long)atomic_load(&g_cur_frame), (unsigned long long)c->tex->serial);
+         FILE *f = fopen(p, "wb"); if (f) { fwrite((const uint8_t *)sb.contents + mo, 1, img * nz, f); fclose(f); } } }
+     // Into Metal's order (rb_copy_shift): converted on the GPU into a staging area of the frame arena, which the blit copies from
++    cl_note("copy_b2t shift");
+     int shift = rb_copy_shift(c->tex, t);
+     uint64_t gsrc = sb.gpuAddress + mo; size_t grow = row, gimg = img;   // the guest's bytes, the storage's order (gsb_store_buf)
+     if (shift) {
+@@ -19772,9 +19908,21 @@ static void copy_b2t(const p_copy_b2t *c, uint32_t size) {
          if (rb_swap_gpu(sb.gpuAddress + mo, row, img, ab.gpuAddress + ao, wb, wb * rows, wb, rows, nz, shift)) { sb = ab; mo = ao; row = wb; img = wb * rows; }
          else RED_ONCE(7, "RGB565-family buffer→texture copy left in the guest's order: red and blue exchanged");
      }
@@ -521,10 +548,27 @@ index 0f8c448..269ae26 100644
 +        for (int z = 0; z < nz; z++) nvn_bc_decode(c->tex->d.format, cpu + mo + z * img, row, c->r.width, c->r.height, (uint8_t *)ab.contents + ao + z * uimg, up);
 +        sb = ab; mo = ao; row = up; img = uimg;
 +    }
++    cl_note("copy_b2t bc");
      int fam_full = !c->r.xoffset && !c->r.yoffset && (NSUInteger)c->r.width == MAX(t.width >> level, 1ul) && (NSUInteger)c->r.height == MAX(t.height >> level, 1ul);
      fam_prepare_write(t, fam_full);
++    cl_note("copy_b2t fam");
      id<MTL4ComputeCommandEncoder> b = blit();
-@@ -21285,8 +21425,8 @@ static void sub_cut(void) {
++    cl_note("copy_b2t blit");
+     if (is3d)
+         enc_b_copy_buffer_texture(b, sb, mo, row, img, MTLSizeMake(c->r.width, c->r.height, nz), t, 0, level, MTLOriginMake(c->r.xoffset, c->r.yoffset, c->r.zoffset));
+     else
+@@ -19784,8 +19932,10 @@ static void copy_b2t(const p_copy_b2t *c, uint32_t size) {
+     // World's texture streamer (Unreal's RHIAsyncReallocateTexture2D) copies resident levels on the GPU into a texture it fills from the CPU, uploaded from its storage; Star Fox streams
+     // BC7 arrays a level of a layer per copy; LEGO Star Wars: The Skywalker Saga fills BC6H volumes a slice per copy and moves them by copying their storage (GitHub #1856)
+     gsb_store_buf(c->tex, level, is3d ? (unsigned)c->r.zoffset : layer0 + (unsigned)c->r.zoffset, (unsigned)nz, &c->r, gsrc, grow, gimg);
++    cl_note("copy_b2t store");
+     if (paired) bcp_after(c->tex, level, &c->r);
+     if (level == 0) ua_note_write(c->tex, t, 0, 0);
++    cl_note("copy_b2t done");
+ }
+ 
+ // Texture copies a blit cannot do -- a format change, a scaled region or a mirrored one (MIRROR_X / MIRROR_Y) (Link's Awakening converts its 1408x792 RG11B10F scene to RGBA16F every frame; Super Mario 3D World scales 1920x1080 to 1280x720
+@@ -21285,8 +21435,8 @@ static void sub_cut(void) {
      }];
      cb_commit(o, (can_hold && rec_on() && rx_merge_on()) ? REC_CMT_SEG : REC_CMT_NOW);
      if (rec_on()) rec_publish();   // the segment reaches the encode thread now, not when its block of records fills
@@ -535,7 +579,7 @@ index 0f8c448..269ae26 100644
      g_cut_draw0 = g_stat_draw;
      if (!g_cuts++) MLOG("segmented submission: first segment submitted at frame %llu pass %llu", (unsigned long long)f, (unsigned long long)g_stat_pass);
  }
-@@ -21500,6 +21640,8 @@ void mtl_exec(const uint8_t *p) {
+@@ -21500,6 +21650,8 @@ void mtl_exec(const uint8_t *p) {
      for (;;) {
          op_hdr h; memcpy(&h, p, sizeof h);
          g_exec_cur = p;
@@ -544,7 +588,7 @@ index 0f8c448..269ae26 100644
          if (trace) PD("o cmd=%p pass=%llu op=%u size=%u", p, g_stat_pass, (unsigned)h.op, (unsigned)h.size);
          // Diagnostic DM_NVN_ALLOCPROF=1: growth of the GPU allocated size is charged to the previous operation's type (rough: allocations on other threads are counted too); the memory report line appends the top 4
          allocprof_level();
-@@ -22602,6 +22744,7 @@ static void present_shot(id<MTLTexture> src, const char *path, const int crop[4]
+@@ -22602,6 +22754,7 @@ static void present_shot(id<MTLTexture> src, const char *path, const int crop[4]
  static int present_now(const tex_t *t, double period, uint64_t frame, uint64_t ticket, const int crop[4], uint64_t ev_val, id<CAMetalDrawable> supplied, double target_ts, double latch_ts) {
      if (g_present_stall_ns) { struct timespec ts = {0, (long)g_present_stall_ns}; nanosleep(&ts, NULL); }
      g_present_n++;
@@ -552,7 +596,7 @@ index 0f8c448..269ae26 100644
      if (bootprof() && (g_present_n == 1 || g_present_n % 120 == 0)) {
          if (g_present_n == 1) g_bp_first_present = bp_now() - g_bp_t0;
          MLOG("[bootprof] t=%.3f s present #%llu: metallibs loaded %llu / %.1f ms; pipelines created %llu / %.1f ms (all synchronous on the submit thread); prewarmed and used: shaders %llu / render pipelines %llu / compute pipelines %llu; "
-@@ -23159,6 +23302,7 @@ static void *present_main(void *arg) {
+@@ -23159,6 +23312,7 @@ static void *present_main(void *arg) {
          pthread_mutex_lock(&g_pq_mu);
          g_classic_busy = 0;
          if (!submitted && ticket > g_pq_done) g_pq_done = ticket;
@@ -560,7 +604,7 @@ index 0f8c448..269ae26 100644
          pthread_cond_broadcast(&g_pq_cv);
          pthread_mutex_unlock(&g_pq_mu);
          if (!submitted) pres_seen(ticket, -1);   // never reaches the screen: the screen wait must not wait for it
-@@ -23166,7 +23310,27 @@ static void *present_main(void *arg) {
+@@ -23166,7 +23320,27 @@ static void *present_main(void *arg) {
      return NULL;
  }
  uint32_t mtl_present_qos(void) { return atomic_load(&g_present_qos); }
@@ -589,7 +633,7 @@ index 0f8c448..269ae26 100644
  static _Atomic int g_present_discard;
  void mtl_link_pause(int on);
  // The short period when the front end goes to the background and waits for the game to save: presents are dropped directly (the display link does not call back in the background, enqueueing would block the game thread; nobody sees the picture anyway).
-@@ -23174,7 +23338,10 @@ void mtl_link_pause(int on);
+@@ -23174,7 +23348,10 @@ void mtl_link_pause(int on);
  // (hle_nvn.c nvnWindowAcquireTexture -> mtl_present_wait). Without clearing, the game cannot advance a single tick during those 2.5 seconds of waiting for the save, and the save is not written (the same pattern three times in player logs: 3 frames queued, 0 submits)
  void mtl_present_discard(int on) { atomic_store(&g_present_discard, on != 0); if (on) present_drop_for_suspend(); }
  static uint64_t present_enqueue(const tex_t *t, double period, const int crop[4], uint64_t ev_val, uint64_t *copy);
@@ -601,7 +645,7 @@ index 0f8c448..269ae26 100644
  void *mtl_device(void) { mtl_init(); return (__bridge void *)g_dev; }
  void *mtl_nvn_event(void) { return (__bridge void *)g_ev; }
  void mtl_wait_gl_event(void *event, uint64_t value) {
-@@ -23371,7 +23538,11 @@ static uint64_t snap_take(const tex_t *t) {
+@@ -23371,7 +23548,11 @@ static uint64_t snap_take(const tex_t *t) {
  // copy (may be NULL): the g_snap_ev value of the snapshot copy this present took, 0 when it took none (mtl_present_wait_texture)
  static uint64_t present_enqueue(const tex_t *t, double period, const int crop[4], uint64_t ev_val, uint64_t *copy) {
      atomic_store(&dm_present_ns, now_ns()); if (copy) *copy = 0;
@@ -614,7 +658,7 @@ index 0f8c448..269ae26 100644
      // A texture whose content comes from its storage is uploaded when it is first resolved (and again when its pages change), in an upload batch only the submit thread may open.
      // Bastion fills both window textures with WriteTexels at boot (main+0x9374) and presents one before drawing into it: resolved on the present thread, the upload aborted the host.
      // Resolve it here, where the game queues the present, and commit the batch, so the display command buffer comes after the upload on the queue and the present thread finds it uploaded.
-@@ -23409,6 +23580,7 @@ static uint64_t present_enqueue(const tex_t *t, double period, const int crop[4]
+@@ -23409,6 +23590,7 @@ static uint64_t present_enqueue(const tex_t *t, double period, const int crop[4]
      pq_item *it = &g_pq[g_pq_in % PQ]; *it = (pq_item){*t, period, atomic_load(&g_cur_frame), {0}, CACurrentMediaTime(), ev_val, ss ? g_snap[slot].ev : 0, !ss && !ev_val && on_sub_thread() ? g_fence : 0};
      if (crop) memcpy(it->crop, crop, sizeof it->crop);   // The current frame's state is enqueued with the ticket number, rather than reading the mutable window late on the present thread
      uint64_t tk = ++g_pq_in;

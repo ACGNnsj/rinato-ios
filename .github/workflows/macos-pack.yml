@@ -126,9 +126,12 @@ jobs:
           mkdir -p /tmp/ipa-parts
           split -b 1500m "$ipa" /tmp/ipa-parts/ArcanaFamigliaRinato.ipa.
           shasum -a 256 "$ipa" | tee /tmp/ipa-parts/SHA256SUMS.txt
+          unzip -p "$ipa" Payload/DmIOS.app/DmIOS > /tmp/DmIOS
+          zip -j -9 /tmp/ipa-parts/DmIOS.zip /tmp/DmIOS
+          shasum -a 256 /tmp/DmIOS > /tmp/ipa-parts/DmIOS.sha256
           ls -l /tmp/ipa-parts
 
-      - name: Upload IPA parts to ci-deps-1
+      - name: Upload IPA parts and probe binary to ci-deps-1
         env:
           GH_TOKEN: ${{ github.token }}
         run: |

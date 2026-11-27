@@ -1,5 +1,5 @@
 diff --git a/dm/gfx/nvn/nvn_mtl.m b/dm/gfx/nvn/nvn_mtl.m
-index 0f8c448..76774b4 100644
+index 0f8c448..092e331 100644
 --- a/dm/gfx/nvn/nvn_mtl.m
 +++ b/dm/gfx/nvn/nvn_mtl.m
 @@ -31,6 +31,7 @@
@@ -459,7 +459,43 @@ index 0f8c448..76774b4 100644
      if (bootprof() && (g_present_n == 1 || g_present_n % 120 == 0)) {
          if (g_present_n == 1) g_bp_first_present = bp_now() - g_bp_t0;
          MLOG("[bootprof] t=%.3f s present #%llu: metallibs loaded %llu / %.1f ms; pipelines created %llu / %.1f ms (all synchronous on the submit thread); prewarmed and used: shaders %llu / render pipelines %llu / compute pipelines %llu; "
-@@ -23371,7 +23485,10 @@ static uint64_t snap_take(const tex_t *t) {
+@@ -23159,6 +23273,7 @@ static void *present_main(void *arg) {
+         pthread_mutex_lock(&g_pq_mu);
+         g_classic_busy = 0;
+         if (!submitted && ticket > g_pq_done) g_pq_done = ticket;
++        if (g_classic_mode) { static _Atomic int n; if (atomic_fetch_add(&n, 1) < 6) MLOG("classic present retired: ticket %llu submitted %d, g_pq_done %llu", (unsigned long long)ticket, submitted, (unsigned long long)g_pq_done); }
+         pthread_cond_broadcast(&g_pq_cv);
+         pthread_mutex_unlock(&g_pq_mu);
+         if (!submitted) pres_seen(ticket, -1);   // never reaches the screen: the screen wait must not wait for it
+@@ -23166,7 +23281,26 @@ static void *present_main(void *arg) {
+     return NULL;
+ }
+ uint32_t mtl_present_qos(void) { return atomic_load(&g_present_qos); }
+-static void present_start(void) { pthread_t th; if (pthread_create(&th, NULL, present_main, NULL)) MDIE("cannot start the present thread"); pthread_detach(th); }
++static void *cl_watchdog(void *arg);
++void mtl_present_progress(uint64_t *queued, uint64_t *done);
++static void present_start(void) { pthread_t th; if (pthread_create(&th, NULL, present_main, NULL)) MDIE("cannot start the present thread"); pthread_detach(th);
++    // DM_NVN_CLASSIC (Phase 1) status: every 3 s the counters a stall has to be read from — frames advanced, submissions and fences, presents queued and retired
++    if (g_classic_mode) { pthread_t w; if (pthread_create(&w, NULL, cl_watchdog, NULL) == 0) pthread_detach(w); }
++}
++static void *cl_watchdog(void *arg) {
++    (void)arg;
++    uint64_t t0 = now_ns();
++    for (;;) {
++        struct timespec ts = {3, 0}; nanosleep(&ts, NULL);
++        uint64_t queued, done; mtl_present_progress(&queued, &done);
++        MLOG("classic status: frame %llu, submission %llu done %llu, passes %llu draws %llu dropped passes %llu, presents queued %llu done %llu read %llu%s",
++             (unsigned long long)atomic_load(&g_cur_frame), (unsigned long long)g_fence, (unsigned long long)atomic_load(&g_done),
++             (unsigned long long)g_stat_pass, (unsigned long long)g_stat_draw, (unsigned long long)g_cl_drop,
++             (unsigned long long)queued, (unsigned long long)done, (unsigned long long)g_pq_read,
++             (now_ns() - t0) > 5000000000ull && !g_fence ? " (no submission yet)" : "");
++    }
++    return NULL;
++}
+ static _Atomic int g_present_discard;
+ void mtl_link_pause(int on);
+ // The short period when the front end goes to the background and waits for the game to save: presents are dropped directly (the display link does not call back in the background, enqueueing would block the game thread; nobody sees the picture anyway).
+@@ -23371,7 +23505,10 @@ static uint64_t snap_take(const tex_t *t) {
  // copy (may be NULL): the g_snap_ev value of the snapshot copy this present took, 0 when it took none (mtl_present_wait_texture)
  static uint64_t present_enqueue(const tex_t *t, double period, const int crop[4], uint64_t ev_val, uint64_t *copy) {
      atomic_store(&dm_present_ns, now_ns()); if (copy) *copy = 0;
@@ -471,6 +507,14 @@ index 0f8c448..76774b4 100644
      // A texture whose content comes from its storage is uploaded when it is first resolved (and again when its pages change), in an upload batch only the submit thread may open.
      // Bastion fills both window textures with WriteTexels at boot (main+0x9374) and presents one before drawing into it: resolved on the present thread, the upload aborted the host.
      // Resolve it here, where the game queues the present, and commit the batch, so the display command buffer comes after the upload on the queue and the present thread finds it uploaded.
+@@ -23409,6 +23546,7 @@ static uint64_t present_enqueue(const tex_t *t, double period, const int crop[4]
+     pq_item *it = &g_pq[g_pq_in % PQ]; *it = (pq_item){*t, period, atomic_load(&g_cur_frame), {0}, CACurrentMediaTime(), ev_val, ss ? g_snap[slot].ev : 0, !ss && !ev_val && on_sub_thread() ? g_fence : 0};
+     if (crop) memcpy(it->crop, crop, sizeof it->crop);   // The current frame's state is enqueued with the ticket number, rather than reading the mutable window late on the present thread
+     uint64_t tk = ++g_pq_in;
++    if (g_classic_mode) { static int n; if (n++ < 5) MLOG("classic present queued: ticket %llu, frame %llu, texture serial %llu", (unsigned long long)tk, (unsigned long long)it->frame, (unsigned long long)it->t.serial); }
+     g_pres_tin[tk % PRING] = it->t_in;
+     g_pres_frm[tk % PRING] = it->frame;
+     if (ss) { g_snap[slot].ticket = tk; atomic_fetch_add(&g_snap_next, 1); if (copy) *copy = g_snap[slot].ev; }
 diff --git a/dm/ios/Sources/main.m b/dm/ios/Sources/main.m
 index f20117d..73f0ffd 100644
 --- a/dm/ios/Sources/main.m

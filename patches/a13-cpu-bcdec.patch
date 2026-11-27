@@ -1,5 +1,5 @@
 diff --git a/dm/gfx/nvn/nvn_mtl.m b/dm/gfx/nvn/nvn_mtl.m
-index 0f8c448..cedc50b 100644
+index 0f8c448..bd85d49 100644
 --- a/dm/gfx/nvn/nvn_mtl.m
 +++ b/dm/gfx/nvn/nvn_mtl.m
 @@ -31,6 +31,7 @@
@@ -10,6 +10,16 @@ index 0f8c448..cedc50b 100644
  #include "nvn_builtin.h"
  #include "host_msl.h"
  #include "nvn_dirty.h"
+@@ -1204,8 +1205,8 @@ static void mtl_init_once(void) {
+     // run-time shader capture needs (the NSP script's capture_shaders boots headless; GitHub issue #112: Balatro's capture aborted here)
+     NSError *re = nil; const char *no4 = NULL;
+     if (getenv("DM_TEST_NO_METAL4")) no4 = "DM_TEST_NO_METAL4";   // test switch: as on a virtual Mac; not set in the product
+-    else if (![g_dev supportsFamily:MTLGPUFamilyMetal4]) no4 = "no Metal 4 GPU family";
+     else {
++        if (![g_dev supportsFamily:MTLGPUFamilyMetal4]) MLOG("[RED] Metal 4 family bit is absent on %s; probing the Metal 4 objects directly", g_dev.name.UTF8String);
+         MTLResidencySetDescriptor *rd = [MTLResidencySetDescriptor new];
+         rd.initialCapacity = 4096;
+         g_res = [g_dev newResidencySetWithDescriptor:rd error:&re];
 @@ -1229,9 +1230,8 @@ static void mtl_init_once(void) {
          MLOG("[RED] Metal device %s has no Metal 4 (%s%s%s): the classic part only, nothing is presented (enough for a run-time shader capture)", g_dev.name.UTF8String, no4, *why ? ": " : "", why);
          return;

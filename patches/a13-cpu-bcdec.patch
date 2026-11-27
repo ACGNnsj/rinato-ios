@@ -1,5 +1,5 @@
 diff --git a/dm/gfx/nvn/nvn_mtl.m b/dm/gfx/nvn/nvn_mtl.m
-index 0f8c448..85f03c1 100644
+index 0f8c448..57a202e 100644
 --- a/dm/gfx/nvn/nvn_mtl.m
 +++ b/dm/gfx/nvn/nvn_mtl.m
 @@ -31,6 +31,7 @@
@@ -122,9 +122,9 @@ index 0f8c448..85f03c1 100644
 +// DM_NVN_CLASSIC (Phase 1) tracing: one line the first time each named seam is reached, so a stall inside the first submission says which seam it stalled on
 +static void cl_note(const char *what) {
 +    if (!g_classic_mode) return;
-+    static const char *seen[24]; static int n;
-+    for (int i = 0; i < n; i++) if (seen[i] == what) return;
-+    if (n < 24) { seen[n++] = what; MLOG("classic seam: %s (thread %s, frame %llu)", what, on_sub_thread() ? "submit" : "game", (unsigned long long)atomic_load(&g_cur_frame)); }
++    static _Atomic int n;
++    int i = atomic_fetch_add(&n, 1);
++    if (i < 200) MLOG("classic seam #%d: %s (thread %s, frame %llu)", i, what, on_sub_thread() ? "submit" : "game", (unsigned long long)atomic_load(&g_cur_frame));
 +}
  static void up_owner_check(const char *where) {
      if (!atomic_load(&g_sub_thread_set) || on_sub_thread()) return;

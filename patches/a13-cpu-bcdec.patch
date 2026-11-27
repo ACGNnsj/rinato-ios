@@ -1,5 +1,5 @@
 diff --git a/dm/gfx/nvn/nvn_mtl.m b/dm/gfx/nvn/nvn_mtl.m
-index 0f8c448..315557f 100644
+index 0f8c448..76774b4 100644
 --- a/dm/gfx/nvn/nvn_mtl.m
 +++ b/dm/gfx/nvn/nvn_mtl.m
 @@ -31,6 +31,7 @@
@@ -451,6 +451,26 @@ index 0f8c448..315557f 100644
      g_cut_draw0 = g_stat_draw;
      if (!g_cuts++) MLOG("segmented submission: first segment submitted at frame %llu pass %llu", (unsigned long long)f, (unsigned long long)g_stat_pass);
  }
+@@ -22602,6 +22715,7 @@ static void present_shot(id<MTLTexture> src, const char *path, const int crop[4]
+ static int present_now(const tex_t *t, double period, uint64_t frame, uint64_t ticket, const int crop[4], uint64_t ev_val, id<CAMetalDrawable> supplied, double target_ts, double latch_ts) {
+     if (g_present_stall_ns) { struct timespec ts = {0, (long)g_present_stall_ns}; nanosleep(&ts, NULL); }
+     g_present_n++;
++    if (g_classic_mode) return 0;   // DM_NVN_CLASSIC (Phase 1): no drawable is taken and nothing is blitted; the false result retires the ticket (g_pq_done), which returns the game's texture
+     if (bootprof() && (g_present_n == 1 || g_present_n % 120 == 0)) {
+         if (g_present_n == 1) g_bp_first_present = bp_now() - g_bp_t0;
+         MLOG("[bootprof] t=%.3f s present #%llu: metallibs loaded %llu / %.1f ms; pipelines created %llu / %.1f ms (all synchronous on the submit thread); prewarmed and used: shaders %llu / render pipelines %llu / compute pipelines %llu; "
+@@ -23371,7 +23485,10 @@ static uint64_t snap_take(const tex_t *t) {
+ // copy (may be NULL): the g_snap_ev value of the snapshot copy this present took, 0 when it took none (mtl_present_wait_texture)
+ static uint64_t present_enqueue(const tex_t *t, double period, const int crop[4], uint64_t ev_val, uint64_t *copy) {
+     atomic_store(&dm_present_ns, now_ns()); if (copy) *copy = 0;
+-    if (g_classic || atomic_load(&g_present_discard) || atomic_load(&g_present_suspended)) return 0;
++    if ((g_classic && !g_classic_mode) || atomic_load(&g_present_discard) || atomic_load(&g_present_suspended)) return 0;   // g_classic alone: the GL / Vulkan device-classic fallback (no NVN, no present path)
++    // DM_NVN_CLASSIC (Phase 1): a present is still queued and still returns a ticket. present_now drops it (there is no classic blit yet), and the present thread
++    // then retires the ticket (g_pq_done advances, pres_seen(k, -1)), which is what hands the swapchain texture back to the game. Returning 0 here instead left the
++    // texture with nobody to return it: the game blocked in its next nvnWindowAcquireTexture and never reached a render pass at all.
+     // A texture whose content comes from its storage is uploaded when it is first resolved (and again when its pages change), in an upload batch only the submit thread may open.
+     // Bastion fills both window textures with WriteTexels at boot (main+0x9374) and presents one before drawing into it: resolved on the present thread, the upload aborted the host.
+     // Resolve it here, where the game queues the present, and commit the batch, so the display command buffer comes after the upload on the queue and the present thread finds it uploaded.
 diff --git a/dm/ios/Sources/main.m b/dm/ios/Sources/main.m
 index f20117d..73f0ffd 100644
 --- a/dm/ios/Sources/main.m

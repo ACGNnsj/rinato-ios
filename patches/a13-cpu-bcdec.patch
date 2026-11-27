@@ -1,5 +1,5 @@
 diff --git a/dm/gfx/nvn/nvn_mtl.m b/dm/gfx/nvn/nvn_mtl.m
-index 0f8c448..092e331 100644
+index 0f8c448..06f1554 100644
 --- a/dm/gfx/nvn/nvn_mtl.m
 +++ b/dm/gfx/nvn/nvn_mtl.m
 @@ -31,6 +31,7 @@
@@ -10,7 +10,7 @@ index 0f8c448..092e331 100644
  #include "nvn_builtin.h"
  #include "host_msl.h"
  #include "nvn_dirty.h"
-@@ -148,6 +149,11 @@ static id<MTLCommandQueue> g_q;
+@@ -148,6 +149,13 @@ static id<MTLCommandQueue> g_q;
  static id<MTL4CommandQueue> g_q4;
  static _Atomic int g_classic_ok;   // mtl_device_classic permits fallback while initialization is in progress
  static int g_classic;   // the device has no Metal 4 and only the classic part started
@@ -19,10 +19,12 @@ index 0f8c448..092e331 100644
 +// Metal 4 objects the device does not have). Presenting, encoding and binding are Phases 2-5 of D:/consoles/.scratch/a13-classic-backend-plan.md
 +static int g_classic_mode;
 +static uint64_t g_cl_drop;   // passes / dispatches / blits whose encoder the classic mode dropped so far (the first one logs its call site)
++static void *cl_watchdog(void *arg);
++void mtl_present_progress(uint64_t *queued, uint64_t *done);
  static dispatch_queue_t g_feedback_q;
  static dispatch_group_t g_present_readbacks;   // Asynchronous screenshot and luminance work on the classic queue
  static _Atomic uint32_t g_present_qos;
-@@ -435,10 +441,38 @@ static void q4_commit_slow(uint64_t dt, const char *site) {
+@@ -435,10 +443,38 @@ static void q4_commit_slow(uint64_t dt, const char *site) {
  // Nothing else calls endCommandBuffer (dm/tools/tests/test_residency_naming.py)
  static void cb_end(id cb, id<MTLResidencySet> also) {
      if (![cb isKindOfClass:[DmRecCB class]]) res_name(cb, also);
@@ -61,7 +63,7 @@ index 0f8c448..092e331 100644
  static NSHashTable *g_res_objects;
  static _Atomic unsigned g_image_heap_n, g_image_heap_comp_n, g_big_n, g_pair_n, g_sparse_n;   // g_big_n: large pools in chunks, whose buffers overlap (BIG_MIN); g_pair_n: storage pairs (pair_texture); g_sparse_n: sparse virtual pools whose runs alias physical pools and replaced run buffers
  static inline MTL4VisibilityOptions resource_vis(void) { return MTL4VisibilityOptionDevice | (g_image_heap_n || g_big_n || g_pair_n || g_sparse_n ? MTL4VisibilityOptionResourceAlias : 0); }
-@@ -1203,9 +1237,13 @@ static void mtl_init_once(void) {
+@@ -1203,9 +1239,13 @@ static void mtl_init_once(void) {
      // Vulkan layers draw on classic queues of their own and need only the device (mtl_device_classic): there the classic part starts and presents are dropped, which is all a
      // run-time shader capture needs (the NSP script's capture_shaders boots headless; GitHub issue #112: Balatro's capture aborted here)
      NSError *re = nil; const char *no4 = NULL;
@@ -77,7 +79,7 @@ index 0f8c448..092e331 100644
          MTLResidencySetDescriptor *rd = [MTLResidencySetDescriptor new];
          rd.initialCapacity = 4096;
          g_res = [g_dev newResidencySetWithDescriptor:rd error:&re];
-@@ -1222,16 +1260,26 @@ static void mtl_init_once(void) {
+@@ -1222,16 +1262,27 @@ static void mtl_init_once(void) {
      }
      if (no4) {
          const char *why = re ? re.localizedDescription.UTF8String : "";
@@ -95,6 +97,7 @@ index 0f8c448..092e331 100644
 +            g_alloc_n = 1;   // no MTL4CommandAllocator exists in classic mode; tag one slot so mtl_sub_begin's picker finds a free allocator at once instead of waiting on the empty pool
 +            { void crash_set_wait_dump(void (*fn)(void)); void mtl_wait_state_dump(void); crash_set_wait_dump(mtl_wait_state_dump); }
 +            dm_res_report_register(mtl_res_counts);
++            { pthread_t w; if (pthread_create(&w, NULL, cl_watchdog, NULL) == 0) pthread_detach(w); }   // the status heartbeat runs even if no present gets past the enqueue guard
 +            MLOG("classic Metal backend: %s, submissions on [g_q commandBuffer], fences signalled on the GPU and completed through completion handlers; encoders are dropped (Phase 1)", g_dev.name.UTF8String);
 +            return;
 +        }
@@ -109,7 +112,7 @@ index 0f8c448..092e331 100644
      { void crash_set_wait_dump(void (*fn)(void)); void mtl_wait_state_dump(void); crash_set_wait_dump(mtl_wait_state_dump); }
      g_alloc_n = 3;
      for (int i = 0; i < 3; i++) {
-@@ -2137,14 +2185,14 @@ void mtl_sub_begin(void) {
+@@ -2137,14 +2188,14 @@ void mtl_sub_begin(void) {
      atomic_store(&g_last_commit_error, 0);
      g_sub_pool = objc_autoreleasePoolPush();
      atomic_store(&g_sub_open, g_fence + 1); atomic_thread_fence(memory_order_seq_cst);   // before any pool lookup of this submission (pool_gone_release); only this thread moves g_fence
@@ -126,7 +129,7 @@ index 0f8c448..092e331 100644
          g_alloc4[g_alloc_n] = [g_dev newCommandAllocatorWithDescriptor:ad error:&ae]; if (!g_alloc4[g_alloc_n]) MDIE("failed to create a new MTL4CommandAllocator: %s", ae.localizedDescription.UTF8String);
          alloc_i = g_alloc_n++; g_alloc_grown++; }
      if (alloc_i < 0) { alloc_i = 0; for (int i = 1; i < g_alloc_n; i++) if (g_alloc_fence[i] < g_alloc_fence[alloc_i]) alloc_i = i; g_alloc_waits++; mtl_wait_at(g_alloc_fence[alloc_i], UINT64_MAX, WS_ALLOC); }
-@@ -2158,7 +2206,7 @@ void mtl_sub_begin(void) {
+@@ -2158,7 +2209,7 @@ void mtl_sub_begin(void) {
      g_alloc_cur = alloc_i;
      if (alloc_share) { g_alloc_shared++; g_alloc_shares++; }
      else { [g_alloc4[alloc_i] reset]; g_alloc_frame = alloc_frame; g_alloc_shared = 1; g_alloc_used = 1; }
@@ -135,7 +138,7 @@ index 0f8c448..092e331 100644
      ts_sub_begin();
      g_commit_blocks = [NSMutableArray array];
      // The overflow buffer created when the previous submission ran out of slots (see g_vis_n >= VIS_SLOTS): retire it. It used to be just cleared here and stayed in the residency set for good (from d2r-mobile 2eb575877)
-@@ -2194,6 +2242,7 @@ static void gp_end(id e);
+@@ -2194,6 +2245,7 @@ static void gp_end(id e);
  // DM_NVN_END_ALIAS=1 puts the alias flush back on every end barrier (ab: alternated with the DM_AB phases, for measuring)
  static int sw_mode(const char *name, int dflt); static inline int sw_on(int m);
  static inline void m4_end(id e) {
@@ -143,7 +146,7 @@ index 0f8c448..092e331 100644
      gp_end(e);
      static int end_alias = -1; if (end_alias < 0) end_alias = sw_mode("DM_NVN_END_ALIAS", 0);
      MTL4VisibilityOptions vis = e == g_blit && g_blit_alias ? blit_vis() : end_alias && sw_on(end_alias) ? resource_vis() : MTL4VisibilityOptionDevice; if (e == g_blit) g_blit_alias = 0;
-@@ -2291,7 +2340,8 @@ static void gp_report(int n, gp_lab *lab, uint64_t frame) {   // the frame's las
+@@ -2291,7 +2343,8 @@ static void gp_report(int n, gp_lab *lab, uint64_t frame) {   // the frame's las
  static void fbd_written(id t);   // DM_NVN_FB_DEPTH_RECT: a GPU write into texture t not bounded by depth snapshot rectangles
  static void fbd_pass_begin(MTL4RenderPassDescriptor *d, int main_pass);
  static void tf_pass_end(void); static id<MTL4RenderCommandEncoder> g_tf_enc;   // the open transform feedback capture pass (nvn_feedback.inc): ended before any other encoder begins
@@ -153,7 +156,7 @@ index 0f8c448..092e331 100644
      id<MTL4RenderCommandEncoder> e = [g_cb renderCommandEncoderWithDescriptor:d]; cm_enc_mark(0);
      if (g_last_end_relaxed && !(g_game_barrier & GAME_BARRIER_FULL) && barrier_game()) { g_bar_skip++;   // ordered by the relaxed end barrier; the alias flush, when aliases exist, is a consumer barrier before this pass's fragments (see m4_end)
          MTL4VisibilityOptions vis = resource_vis(); if (vis & MTL4VisibilityOptionResourceAlias) [e barrierAfterQueueStages:MTLStageAll beforeStages:MTLStageFragment visibilityOptions:vis]; }
-@@ -2300,11 +2350,13 @@ static inline id<MTL4RenderCommandEncoder> enc_r_begin_pass(MTL4RenderPassDescri
+@@ -2300,11 +2353,13 @@ static inline id<MTL4RenderCommandEncoder> enc_r_begin_pass(MTL4RenderPassDescri
      [e setArgumentTable:g_vt atStages:MTLRenderStageVertex]; [e setArgumentTable:g_ft atStages:MTLRenderStageFragment]; gp_begin(e, 'R', d); return e;
  }
  static inline void enc_r_end_pass(id e) {
@@ -168,7 +171,7 @@ index 0f8c448..092e331 100644
  static inline void enc_r_end(id e) { m4_end(e); }
  static inline void enc_r_pso(__unsafe_unretained id<MTL4RenderCommandEncoder> e, __unsafe_unretained id<MTLRenderPipelineState> p) { [e setRenderPipelineState:p]; }   // the caller holds both: no retain and release a draw
  static inline void enc_r_dss(id<MTL4RenderCommandEncoder> e, id<MTLDepthStencilState> s) { [e setDepthStencilState:s]; }
-@@ -2363,7 +2415,7 @@ static inline void enc_r_draw_indirect(id<MTL4RenderCommandEncoder> e, MTLPrimit
+@@ -2363,7 +2418,7 @@ static inline void enc_r_draw_indirect(id<MTL4RenderCommandEncoder> e, MTLPrimit
  static inline void enc_r_draw_indexed(id<MTL4RenderCommandEncoder> e, MTLPrimitiveType p, NSUInteger n, MTLIndexType t, uint64_t gpu, NSUInteger len, NSUInteger i, NSInteger bv, NSUInteger bi) { za_check(gpu, "index buffer", -1); g_cm_mdraws++; [e drawIndexedPrimitives:p indexCount:n indexType:t indexBuffer:gpu indexBufferLength:len instanceCount:i baseVertex:bv baseInstance:bi]; }
  static inline void enc_r_draw_indexed_indirect(id<MTL4RenderCommandEncoder> e, MTLPrimitiveType p, MTLIndexType t, uint64_t gpu, NSUInteger len, uint64_t ind) { za_check(gpu, "index buffer", -1); za_check(ind, "indexed indirect draw record", -1); g_cm_mdraws++; [e drawIndexedPrimitives:p indexType:t indexBuffer:gpu indexBufferLength:len indirectBuffer:ind]; }
  static void ubd_land_compute(void);
@@ -177,7 +180,7 @@ index 0f8c448..092e331 100644
  static inline id<MTLComputeCommandEncoder> enc_c_begin_concurrent(id<MTLCommandBuffer> cb) { return [cb computeCommandEncoderWithDispatchType:MTLDispatchTypeConcurrent]; }
  static inline void enc_c_end(id e) { m4_end(e); }
  static inline void enc_c_pso(id e, id<MTLComputePipelineState> p) { [e setComputePipelineState:p]; }
-@@ -2371,6 +2423,7 @@ static inline void enc_c_args(id e, uint64_t gpu, NSUInteger i) { (void)e; za_ch
+@@ -2371,6 +2426,7 @@ static inline void enc_c_args(id e, uint64_t gpu, NSUInteger i) { (void)e; za_ch
  static inline void enc_c_dispatch(id e, MTLSize n, MTLSize t) { [e dispatchThreadgroups:n threadsPerThreadgroup:t]; }
  static inline void enc_c_dispatch_indirect(id e, uint64_t ind, MTLSize t) { za_check(ind, "indirect dispatch record", -1); [(id<MTL4ComputeCommandEncoder>)e dispatchThreadgroupsWithIndirectBuffer:ind threadsPerThreadgroup:t]; }
  static inline id enc_b_begin(id cb) {
@@ -185,7 +188,7 @@ index 0f8c448..092e331 100644
      if (cb == g_cb) { g_cm_enc++; cm_enc_mark(3); }
      id e = [cb respondsToSelector:@selector(beginCommandBufferWithAllocator:)] ? [cb computeCommandEncoder] : [cb blitCommandEncoder];
      if (cb == g_cb) cm_enc_mark(1);
-@@ -2397,7 +2450,7 @@ static uint64_t g_blit_splits;   // copies / buffer updates / fills that ended a
+@@ -2397,7 +2453,7 @@ static uint64_t g_blit_splits;   // copies / buffer updates / fills that ended a
  uint64_t mtl_blit_splits(void) { return g_blit_splits; }
  static int enc_open(void);
  static int g_blit_ct;   // the open copy encoder has the compute argument table set (dispatches share it, dispatch_enc)
@@ -194,7 +197,7 @@ index 0f8c448..092e331 100644
  static void ubd_flush(void); static int g_nubd;   // the inline updates deferred (see mtl_sub_update)
  static int g_ubd_landing;
  static id<MTL4ComputeCommandEncoder> blit_raw(void) {
-@@ -3316,6 +3369,11 @@ static void cb_seal(void) {
+@@ -3316,6 +3372,11 @@ static void cb_seal(void) {
  static void cb_commit(DmCommitFB *o, int end) {   // end: the submission ends with this command buffer (rec_commit)
      cb_seal();
      res_commit();
@@ -206,7 +209,7 @@ index 0f8c448..092e331 100644
      cb_end(g_cb, nil);
      rec_commit(g_cb, o, end); g_cbgen++;
  }
-@@ -3368,7 +3426,7 @@ uint64_t mtl_sub_commit(void) {
+@@ -3368,7 +3429,7 @@ uint64_t mtl_sub_commit(void) {
      if (g_gp_state == 1 && !gp_active()) { int gn = g_gp_n; gp_lab *gl = malloc(sizeof(gp_lab) * (gn ? gn : 1)); memcpy(gl, g_gp_lab, sizeof(gp_lab) * gn); uint64_t gf = g_gp_frame; g_gp_state = 2; atomic_store(&g_gp_busy, 1);
          [o addFeedbackHandler:^(id<MTL4CommitFeedback> f) { (void)f; gp_report(gn, gl, gf); }]; }
      cb_commit(o, 1);   // the stores it holds come before any later upload batch (gsb_held)
@@ -215,7 +218,7 @@ index 0f8c448..092e331 100644
      // With the encode thread the records go to it and the replay goes on with the next submission: what comes after it on the queue is a record too (the next submission's commits,
      // upload batches, snapshot copies), a CPU wait for the GPU waits for the fence's signal behind this commit, and a present of the game's own texture waits for this note
      // (sub_commit_wait). The replay used to wait for the encode thread here: Ocarina of Time makes about 30 submissions a frame (one at each event signal), and on the iPhone the GPU
-@@ -3462,11 +3520,11 @@ static int gpu_read_wait(int site) {
+@@ -3462,11 +3523,11 @@ static int gpu_read_wait(int site) {
      if (g_tf_enc) tf_pass_end();
      rp_end(); ubd_land(); cb_commit(nil, 0);
      if (!g_read_ev) g_read_ev = [g_dev newSharedEvent];
@@ -229,7 +232,7 @@ index 0f8c448..092e331 100644
      return ok;
  }
  void mtl_present_flush(void);
-@@ -3920,9 +3978,19 @@ static int tex_2d_size_exceeds_limit(const tex_t *t) {
+@@ -3920,9 +3981,19 @@ static int tex_2d_size_exceeds_limit(const tex_t *t) {
      // Apple10 raised the 2D limit to 32768. Keep the existing bounds for other targets.
      return size > 32768 || t->d.target != NVN_TEXTURE_TARGET_2D || ![g_dev supportsFamily:MTLGPUFamilyApple10];
  }
@@ -249,7 +252,7 @@ index 0f8c448..092e331 100644
      // Catch dimensions that would cause Metal's descriptor validation to abort.
      if (tex_2d_size_exceeds_limit(t) || t->d.depth > 2048) { RED_ONCE(71, "texture size exceeds Metal limits: %u×%u×%u levels %u format %#x target %d (first case ser=%llu)", t->d.width, t->d.height, t->d.depth, t->d.levels, t->d.format, t->d.target, (unsigned long long)t->serial); return nil; }
      MTLTextureDescriptor *d = [MTLTextureDescriptor new];
-@@ -3970,7 +4038,7 @@ static MTLTextureDescriptor *tex_desc(const tex_t *t, int packaged) {
+@@ -3970,7 +4041,7 @@ static MTLTextureDescriptor *tex_desc(const tex_t *t, int packaged) {
      }
      d.storageMode = MTLStorageModePrivate;   // Render targets and assets both go in GPU private storage (lossless compression available)
      d.usage = MTLTextureUsageShaderRead | (fmt_compressed(t->d.format) || packaged ? 0 : MTLTextureUsageRenderTarget)
@@ -258,7 +261,7 @@ index 0f8c448..092e331 100644
      // A depth-stencil texture has the format-view usage from the start: its stencil is read through an X32_Stencil8 view (stencil-mode views and textures, the depth-stencil copy), which Metal's
      // contract allows only with that usage. Apple GPUs read the view correctly without it, but the API validation layer aborts the process at the first such view (PR #106, found on Luigi's
      // Mansion 3), and upgrading later would recreate a depth buffer in use. Unlike colour formats it costs nothing measured: on an M4 Pro a 2560x1440 one has the same allocated size and the same
-@@ -4214,7 +4282,7 @@ static void up_flush(void) {
+@@ -4214,7 +4285,7 @@ static void up_flush(void) {
      if (g_up_ce) {
          m4_end(g_up_ce); g_up_ce = nil;
      }
@@ -267,7 +270,7 @@ index 0f8c448..092e331 100644
      if (b) [b barrierAfterQueueStages:MTLStageAll beforeStages:MTLStageAll visibilityOptions:resource_vis()];
      id<MTLTexture> from = nil;
      for (int i = 0; b && i < g_nup_blits; i++) {
-@@ -4241,7 +4309,7 @@ static void up_flush(void) {
+@@ -4241,7 +4312,7 @@ static void up_flush(void) {
      static int lost_at = -2; static uint64_t batch_n; if (lost_at == -2) { const char *e = getenv("DM_TEST_UP_LOST"); lost_at = e ? atoi(e) : -1; } int fake_lost = dsts.count && lost_at > 0 && (int)++batch_n == lost_at;
      MTL4CommitOptions *o = [MTL4CommitOptions new];
      atomic_fetch_add(&g_up_pending, 1);
@@ -276,7 +279,7 @@ index 0f8c448..092e331 100644
          if (f.error) { MLOG("[RED] upload command buffer execution error: %s", f.error.description.UTF8String); res_top_once(f.error); gpu_lost_check(f.error, "upload"); }
          if (f.error || fake_lost) {
              atomic_fetch_add(&g_up_lost_gen, 1);
-@@ -4265,10 +4333,22 @@ static void up_flush(void) {
+@@ -4265,10 +4336,22 @@ static void up_flush(void) {
          } else {
              up_complete(slot);
          }
@@ -303,7 +306,7 @@ index 0f8c448..092e331 100644
      // Outside a submission nothing else hands the encode thread its current block until the next submission, so a batch flushed on the spot stayed a record and every wait for it
      // (nvnQueueFinish on any thread, up_begin on another) waited for that submission: hand it over now (from PR #141, which found the nvnQueueFinish half)
      if (!g_cb) rec_publish();
-@@ -4297,12 +4377,14 @@ static void up_begin(void) {
+@@ -4297,12 +4380,14 @@ static void up_begin(void) {
      up_wait_zero(&g_up_alloc_busy[slot], WS_UPALLOC);
      atomic_store(&g_up_alloc_busy[slot], 1); g_up_cur_slot = slot;
      g_up_batch_bytes = g_up_src_bytes = 0; g_up_over_used = 0;
@@ -323,7 +326,7 @@ index 0f8c448..092e331 100644
      if (!g_up_texs) g_up_texs = [NSMutableArray array];
      if (!g_up_keep) g_up_keep = [NSMutableArray array];
  }
-@@ -4676,7 +4758,8 @@ static id<MTLTexture> pkg_upload_(const tex_t *t, uint64_t *stamp, id<MTLTexture
+@@ -4676,7 +4761,8 @@ static id<MTLTexture> pkg_upload_(const tex_t *t, uint64_t *stamp, id<MTLTexture
      d.usage |= keep & (MTLTextureUsageRenderTarget | MTLTextureUsagePixelFormatView);
      int rb_shift = rb_packed_shift(t->d.format);   // the RGB565 family is repacked into Metal's order on the CPU (rb_packed_shift)
      int linear = (t->d.flags & (NVN_TEXTURE_FLAGS_LINEAR | NVN_TEXTURE_FLAGS_LINEAR_RENDER_TARGET)) != 0;   // linear storage no view could take (linear_fit): its rows are copied on the CPU
@@ -333,7 +336,7 @@ index 0f8c448..092e331 100644
      if (direct) d.usage |= MTLTextureUsageShaderWrite | MTLTextureUsagePixelFormatView;
      id<MTLTexture> mt = reuse && reuse.pixelFormat == d.pixelFormat && reuse.width == d.width && reuse.height == d.height && reuse.mipmapLevelCount == d.mipmapLevelCount && reuse.textureType == d.textureType
                          && (reuse.usage & d.usage) == d.usage
-@@ -4704,23 +4787,23 @@ static id<MTLTexture> pkg_upload_(const tex_t *t, uint64_t *stamp, id<MTLTexture
+@@ -4704,23 +4790,23 @@ static id<MTLTexture> pkg_upload_(const tex_t *t, uint64_t *stamp, id<MTLTexture
      for (unsigned l = 0; l < d.mipmapLevelCount; l++) {
          uint32_t w, h, z; tex_lsize(t, l, &w, &h, &z);
          unsigned n = layers; if (need) { n = 0; for (unsigned y = 0; y < layers; y++) n += need[l * layers + y]; }
@@ -361,7 +364,7 @@ index 0f8c448..092e331 100644
      t_tex_upload_lookup = 0;
      if (g_nvn_deswz_gpu && !use_gpu && !sparse && !rb_shift && !linear) RED_ONCE(40, "swizzled texture storage is not in a memory pool; falling back to the CPU");
      if (use_gpu) {
-@@ -4802,6 +4885,15 @@ static id<MTLTexture> pkg_upload_(const tex_t *t, uint64_t *stamp, id<MTLTexture
+@@ -4802,6 +4888,15 @@ static id<MTLTexture> pkg_upload_(const tex_t *t, uint64_t *stamp, id<MTLTexture
          size_t pitch = (size_t)((w + bw - 1) / bw) * bpb, rows = (h + bh - 1) / bh;
          for (unsigned y = 0; y < layers; y++) {
              if (need && !need[l * layers + y]) { up_copy_add(prev, MTLSizeMake(w, h, z), mt, y, l); continue; }
@@ -377,7 +380,7 @@ index 0f8c448..092e331 100644
              if (linear) {   // one 2D level (linear_fit): rows of the storage's stride, the same pitch GetStorageSize counts
                  size_t srow = tex_linear_row(t);
                  if (l || y || z != 1 || srow < pitch || srow * rows > t->L.size) { RED_ONCE(153, "linear texture upload: %ux%u format %#x target %d levels %u is not one 2D level of rows (stride %zu)", t->d.width, t->d.height, t->d.format, t->d.target, t->d.levels, srow); break; }
-@@ -5203,6 +5295,7 @@ static void tex_zero_fill(id<MTLTexture> mt) {
+@@ -5203,6 +5298,7 @@ static void tex_zero_fill(id<MTLTexture> mt) {
          return;
      }
      if (depth || stencil || multisample) {
@@ -385,7 +388,7 @@ index 0f8c448..092e331 100644
          up_begin();
          if (g_up_ce) { m4_end(g_up_ce); g_up_ce = nil; }
          NSUInteger slices = mt.arrayLength * (tt == MTLTextureTypeCube || tt == MTLTextureTypeCubeArray ? 6 : 1);
-@@ -7027,6 +7120,7 @@ static id<MTL4RenderCommandEncoder> g_enc;
+@@ -7027,6 +7123,7 @@ static id<MTL4RenderCommandEncoder> g_enc;
  enum { TS_SLOTS = 4096 };   // the largest timestamp heap Metal makes
  static uint32_t g_ts_next; static int g_ts_state, g_ts_s0;   // state: 0 not tried, 1 on, -1 off; s0: the slot of this submission's first boundary
  static int ts_on(void) {
@@ -393,7 +396,7 @@ index 0f8c448..092e331 100644
      if (!g_ts_state) { g_ts_state = -1;
          if (seg_ts()) { MTL4CounterHeapDescriptor *hd = [MTL4CounterHeapDescriptor new]; hd.type = MTL4CounterHeapTypeTimestamp; hd.count = TS_SLOTS; NSError *er = nil;
              g_ts_heap = [g_dev newCounterHeapWithDescriptor:hd error:&er];
-@@ -7656,6 +7750,14 @@ static void *rp_begin_ex_ref(int clear_only) { AP_B; void *e = rp_begin_ex_(clea
+@@ -7656,6 +7753,14 @@ static void *rp_begin_ex_ref(int clear_only) { AP_B; void *e = rp_begin_ex_(clea
  static void bare_dims(NSUInteger *w, NSUInteger *h);
  static void *rp_begin_ex_(int clear_only) {
      if (g_enc) return (__bridge void *)g_enc;
@@ -408,7 +411,7 @@ index 0f8c448..092e331 100644
      if (g_nlc) lc_take_rt();   // waiting lazy clears: this pass's load actions, or landed before it, so none waits past a pass that opens (see lc_take_rt)
      g_enc_mode = clear_only; g_enc_geo_nocolor = g_geo_omit_colors; g_pass_swrite = g_pass_order = g_pass_late_res = 0; g_sm_pass = 0; g_fsp_pass = 0;
      if (!R.has_rt) { RED_ONCE(3, "no render target set before the draw"); return NULL; }
-@@ -9350,6 +9452,7 @@ static void *tex_by_id_ref(int tid) {
+@@ -9350,6 +9455,7 @@ static void *tex_by_id_ref(int tid) {
      if ((r.has_v && (r.v.set_format || r.v.set_levels || r.v.set_layers || r.v.set_target)) || need_sw || stv) {
          if (!r.has_v) memset(&r.v, 0, sizeof r.v);
          uint32_t pf = view_pf ? view_pf : (uint32_t)base.pixelFormat;
@@ -416,7 +419,7 @@ index 0f8c448..092e331 100644
          if (stv) pf = MTLPixelFormatX32_Stencil8;
          if (r.v.set_format && nvn_fmt_bc(rp->t.d.format) && !nvn_fmt_bc(r.v.format)) {   // the raw blocks of a BC texture through an uncompressed view (see rt_view_fmt): Metal has no such view
              RED_ONCE(86, "Metal cannot create the raw-block view of a compressed texture (NVN format %#x → view %#x): treated as an empty slot", rp->t.d.format, r.v.format);
-@@ -11446,6 +11549,7 @@ static MTLRenderPipelineDescriptor *pso_desc(const pso_key *k, NvShader *vs, NvS
+@@ -11446,6 +11552,7 @@ static MTLRenderPipelineDescriptor *pso_desc(const pso_key *k, NvShader *vs, NvS
  // whole run (Kirby Star Allies: 1.13 GB), and it offers no choice: docs/reference/memory.md
  static int pso4_on(void) {
      static int v = -1;
@@ -424,7 +427,7 @@ index 0f8c448..092e331 100644
      if (v < 0) {
          const char *e = getenv("DM_PSO_MTL4");
  #if TARGET_OS_IPHONE
-@@ -19772,6 +19876,15 @@ static void copy_b2t(const p_copy_b2t *c, uint32_t size) {
+@@ -19772,6 +19879,15 @@ static void copy_b2t(const p_copy_b2t *c, uint32_t size) {
          if (rb_swap_gpu(sb.gpuAddress + mo, row, img, ab.gpuAddress + ao, wb, wb * rows, wb, rows, nz, shift)) { sb = ab; mo = ao; row = wb; img = wb * rows; }
          else RED_ONCE(7, "RGB565-family buffer→texture copy left in the guest's order: red and blue exchanged");
      }
@@ -440,7 +443,7 @@ index 0f8c448..092e331 100644
      int fam_full = !c->r.xoffset && !c->r.yoffset && (NSUInteger)c->r.width == MAX(t.width >> level, 1ul) && (NSUInteger)c->r.height == MAX(t.height >> level, 1ul);
      fam_prepare_write(t, fam_full);
      id<MTL4ComputeCommandEncoder> b = blit();
-@@ -21285,8 +21398,8 @@ static void sub_cut(void) {
+@@ -21285,8 +21401,8 @@ static void sub_cut(void) {
      }];
      cb_commit(o, (can_hold && rec_on() && rx_merge_on()) ? REC_CMT_SEG : REC_CMT_NOW);
      if (rec_on()) rec_publish();   // the segment reaches the encode thread now, not when its block of records fills
@@ -451,7 +454,7 @@ index 0f8c448..092e331 100644
      g_cut_draw0 = g_stat_draw;
      if (!g_cuts++) MLOG("segmented submission: first segment submitted at frame %llu pass %llu", (unsigned long long)f, (unsigned long long)g_stat_pass);
  }
-@@ -22602,6 +22715,7 @@ static void present_shot(id<MTLTexture> src, const char *path, const int crop[4]
+@@ -22602,6 +22718,7 @@ static void present_shot(id<MTLTexture> src, const char *path, const int crop[4]
  static int present_now(const tex_t *t, double period, uint64_t frame, uint64_t ticket, const int crop[4], uint64_t ev_val, id<CAMetalDrawable> supplied, double target_ts, double latch_ts) {
      if (g_present_stall_ns) { struct timespec ts = {0, (long)g_present_stall_ns}; nanosleep(&ts, NULL); }
      g_present_n++;
@@ -459,7 +462,7 @@ index 0f8c448..092e331 100644
      if (bootprof() && (g_present_n == 1 || g_present_n % 120 == 0)) {
          if (g_present_n == 1) g_bp_first_present = bp_now() - g_bp_t0;
          MLOG("[bootprof] t=%.3f s present #%llu: metallibs loaded %llu / %.1f ms; pipelines created %llu / %.1f ms (all synchronous on the submit thread); prewarmed and used: shaders %llu / render pipelines %llu / compute pipelines %llu; "
-@@ -23159,6 +23273,7 @@ static void *present_main(void *arg) {
+@@ -23159,6 +23276,7 @@ static void *present_main(void *arg) {
          pthread_mutex_lock(&g_pq_mu);
          g_classic_busy = 0;
          if (!submitted && ticket > g_pq_done) g_pq_done = ticket;
@@ -467,13 +470,11 @@ index 0f8c448..092e331 100644
          pthread_cond_broadcast(&g_pq_cv);
          pthread_mutex_unlock(&g_pq_mu);
          if (!submitted) pres_seen(ticket, -1);   // never reaches the screen: the screen wait must not wait for it
-@@ -23166,7 +23281,26 @@ static void *present_main(void *arg) {
+@@ -23166,7 +23284,24 @@ static void *present_main(void *arg) {
      return NULL;
  }
  uint32_t mtl_present_qos(void) { return atomic_load(&g_present_qos); }
 -static void present_start(void) { pthread_t th; if (pthread_create(&th, NULL, present_main, NULL)) MDIE("cannot start the present thread"); pthread_detach(th); }
-+static void *cl_watchdog(void *arg);
-+void mtl_present_progress(uint64_t *queued, uint64_t *done);
 +static void present_start(void) { pthread_t th; if (pthread_create(&th, NULL, present_main, NULL)) MDIE("cannot start the present thread"); pthread_detach(th);
 +    // DM_NVN_CLASSIC (Phase 1) status: every 3 s the counters a stall has to be read from — frames advanced, submissions and fences, presents queued and retired
 +    if (g_classic_mode) { pthread_t w; if (pthread_create(&w, NULL, cl_watchdog, NULL) == 0) pthread_detach(w); }
@@ -495,11 +496,24 @@ index 0f8c448..092e331 100644
  static _Atomic int g_present_discard;
  void mtl_link_pause(int on);
  // The short period when the front end goes to the background and waits for the game to save: presents are dropped directly (the display link does not call back in the background, enqueueing would block the game thread; nobody sees the picture anyway).
-@@ -23371,7 +23505,10 @@ static uint64_t snap_take(const tex_t *t) {
+@@ -23174,7 +23309,10 @@ void mtl_link_pause(int on);
+ // (hle_nvn.c nvnWindowAcquireTexture -> mtl_present_wait). Without clearing, the game cannot advance a single tick during those 2.5 seconds of waiting for the save, and the save is not written (the same pattern three times in player logs: 3 frames queued, 0 submits)
+ void mtl_present_discard(int on) { atomic_store(&g_present_discard, on != 0); if (on) present_drop_for_suspend(); }
+ static uint64_t present_enqueue(const tex_t *t, double period, const int crop[4], uint64_t ev_val, uint64_t *copy);
+-uint64_t mtl_present(const tex_t *t, double period, const int crop[4], uint64_t *copy) { return present_enqueue(t, period, crop, 0, copy); }
++uint64_t mtl_present(const tex_t *t, double period, const int crop[4], uint64_t *copy) {
++    if (g_classic_mode) { static _Atomic int n; if (atomic_fetch_add(&n, 1) < 4) MLOG("classic mtl_present reached (worker): serial %llu", (unsigned long long)t->serial); }
++    return present_enqueue(t, period, crop, 0, copy);
++}
+ void *mtl_device(void) { mtl_init(); return (__bridge void *)g_dev; }
+ void *mtl_nvn_event(void) { return (__bridge void *)g_ev; }
+ void mtl_wait_gl_event(void *event, uint64_t value) {
+@@ -23371,7 +23509,11 @@ static uint64_t snap_take(const tex_t *t) {
  // copy (may be NULL): the g_snap_ev value of the snapshot copy this present took, 0 when it took none (mtl_present_wait_texture)
  static uint64_t present_enqueue(const tex_t *t, double period, const int crop[4], uint64_t ev_val, uint64_t *copy) {
      atomic_store(&dm_present_ns, now_ns()); if (copy) *copy = 0;
 -    if (g_classic || atomic_load(&g_present_discard) || atomic_load(&g_present_suspended)) return 0;
++    if (g_classic_mode) { static _Atomic int n; if (atomic_fetch_add(&n, 1) < 4) MLOG("classic present_enqueue: discard %d suspended %d", atomic_load(&g_present_discard), atomic_load(&g_present_suspended)); }
 +    if ((g_classic && !g_classic_mode) || atomic_load(&g_present_discard) || atomic_load(&g_present_suspended)) return 0;   // g_classic alone: the GL / Vulkan device-classic fallback (no NVN, no present path)
 +    // DM_NVN_CLASSIC (Phase 1): a present is still queued and still returns a ticket. present_now drops it (there is no classic blit yet), and the present thread
 +    // then retires the ticket (g_pq_done advances, pres_seen(k, -1)), which is what hands the swapchain texture back to the game. Returning 0 here instead left the
@@ -507,7 +521,7 @@ index 0f8c448..092e331 100644
      // A texture whose content comes from its storage is uploaded when it is first resolved (and again when its pages change), in an upload batch only the submit thread may open.
      // Bastion fills both window textures with WriteTexels at boot (main+0x9374) and presents one before drawing into it: resolved on the present thread, the upload aborted the host.
      // Resolve it here, where the game queues the present, and commit the batch, so the display command buffer comes after the upload on the queue and the present thread finds it uploaded.
-@@ -23409,6 +23546,7 @@ static uint64_t present_enqueue(const tex_t *t, double period, const int crop[4]
+@@ -23409,6 +23551,7 @@ static uint64_t present_enqueue(const tex_t *t, double period, const int crop[4]
      pq_item *it = &g_pq[g_pq_in % PQ]; *it = (pq_item){*t, period, atomic_load(&g_cur_frame), {0}, CACurrentMediaTime(), ev_val, ss ? g_snap[slot].ev : 0, !ss && !ev_val && on_sub_thread() ? g_fence : 0};
      if (crop) memcpy(it->crop, crop, sizeof it->crop);   // The current frame's state is enqueued with the ticket number, rather than reading the mutable window late on the present thread
      uint64_t tk = ++g_pq_in;
